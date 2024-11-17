@@ -1,6 +1,4 @@
-import {
-  Routes,
-} from '@angular/router';
+import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ExternalApiComponent } from './pages/external-api/external-api.component';
@@ -8,6 +6,7 @@ import { ErrorComponent } from './pages/error/error.component';
 import { authGuardFn } from '@auth0/auth0-angular';
 import { FormPageComponent } from './components/form-page/form-page.component';
 import { CompletePageComponent } from './components/complete-page/complete-page.component';
+import { HomePageComponent } from './components/home-page/home-page.component';  // Import du nouveau composant
 
 export const routes: Routes = [
   {
@@ -33,6 +32,11 @@ export const routes: Routes = [
     path: 'complete',
     component: CompletePageComponent,
     canActivate: [authGuardFn],
+  },
+  {
+    path: 'home-page',  // La nouvelle route
+    component: HomePageComponent,
+    pathMatch: 'full',
   },
   {
     path: '',
