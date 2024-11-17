@@ -1,0 +1,9 @@
+
+
+
+//Migration table de donnée dans la base de donnée
+npx sequelize-cli db:migrate
+
+
+//Voir les tables
+\dt

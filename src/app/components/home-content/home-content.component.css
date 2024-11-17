@@ -1,0 +1,138 @@
+:host {
+    display: block;
+    width: 100%; /* Prendre toute la largeur */
+    height: 100%; /* Prendre toute la hauteur */
+  }
+
+  
+  /* CONTAINER CENTRALISÉ */
+  .container {
+    min-height: 100vh; /* Prend toute la hauteur de l'écran */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .side-left, .side-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  /* BOUTONS CENTRÉS */
+  .side-right {
+   
+    width: 100%;
+   
+    height: 100%;
+    gap: 20px; /* Espacement entre les boutons */
+  }
+  
+  button {
+    cursor: pointer;
+    border: 0;
+    border-radius: 4px;
+    font-weight: 600;
+
+    width: 70%;
+    padding: 20px;
+    margin: 0 10px; /* Espacement entre les boutons pour les écrans larges */
+    box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
+    transition: 0.4s ease-in-out;
+  }
+  
+  /* STYLES DES BOUTONS */
+  .reg {
+    color: white;
+    background-color: rgba(104, 85, 224, 1);
+  }
+  
+  .log {
+    color: rgb(104, 85, 224);
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(104, 85, 224, 1);
+  }
+  .side-left {
+    padding: 20px;
+    background-color: rgba(104, 85, 224, 1);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+    width: 100%;
+    height: 100%;
+
+  }
+
+  .side-left > h1 {
+    color: #fff;
+    font-weight: bold;
+    font-size: 50px;
+  }
+
+  
+  .register {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:30px;
+    width: 100%;
+  }
+
+  .register > p {
+    color:#fff;
+  }
+  /* ANIMATION AU SURVOL */
+  button:hover {
+    color: white;
+    box-shadow: 0 0 20px rgba(104, 85, 224, 0.6);
+    background-color: rgba(104, 85, 224, 1);
+  }
+  
+  /* TEXTE ET LIENS */
+  .container div > p span {
+    color: red; /* Couleur rouge pour l'élément span */
+  }
+  
+  p {
+    position: relative;
+    top: 30px;
+  }
+  
+  p a {
+    color: black;
+    text-decoration: none;
+  }
+  
+  /* Style spécifique pour l'icône i.fas.fa-circle */
+  .fa-user-circle {
+    font-size: 100px; /* Taille de l'icône */
+    margin-bottom: 20px; /* Espacement sous l'icône */
+    transition: transform 0.3s ease, color 0.3s ease; /* Animation sur hover */
+  }
+  
+  /* Effet au survol */
+ .fa-user-circle:hover {
+    color: rgba(66, 133, 244, 1); /* Changement de couleur au survol */
+    transform: scale(1.2); /* Légère augmentation de la taille */
+  }
+  .side-right {
+    flex-direction: column; /* Boutons empilés verticalement */
+    gap: 15px; /* Réduction de l'espacement */
+    width: 100%;
+    height: 100%;
+  }
+
+  /* MEDIA QUERY POUR PETITS ÉCRANS */
+  @media (max-width: 500px) {
+  
+  
+    button {
+      width: 100%; /* Les boutons occupent toute la largeur */
+      font-size: 1rem; /* Réduction de la taille de police */
+      padding: 0.8rem 0; /* Marges internes adaptées */
+      margin: 0; /* Suppression de l'espacement latéral */
+    }
+  }
+  

@@ -1,0 +1,39 @@
+<div class="step-template">
+  <h2>Step {{ step.stepIndex }}</h2>
+  <div class="step-content-label">
+    Here's where you show content for step {{ step.stepIndex }}
+  </div>
+
+  <div [ngSwitch]="step.stepIndex">
+    <ng-container *ngSwitchCase="1">
+        <form [formGroup]="stepForm1">
+          <label>Nom</label>
+          <input formControlName="name" type="text" (ngModelChange)="onFormChange(1)" />
+          <label>Email</label>
+          <input formControlName="email" type="email" (ngModelChange)="onFormChange(1)" />
+        </form>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="2">
+        <form [formGroup]="stepForm2">
+          <label>Adresse</label>
+          <input formControlName="address" type="text" (ngModelChange)="onFormChange(2)" />
+          <label>Ville</label>
+          <input formControlName="city" type="text" (ngModelChange)="onFormChange(2)" />
+        </form>
+      </ng-container>
+
+     
+    <ng-container *ngSwitchCase="3">
+        <form [formGroup]="stepForm3">
+          <label>Nom d'utilisateur</label>
+          <input formControlName="username" type="text" (ngModelChange)="onFormChange(3)" />
+          <label>Mot de passe</label>
+          <input formControlName="password" type="password" (ngModelChange)="onFormChange(3)" />
+        </form>
+      </ng-container>
+  </div>
+
+
+</div>
