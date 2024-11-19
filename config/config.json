@@ -1,23 +1,29 @@
 {
   "development": {
-    "username": "myuser",         
-    "password": "root",           
-    "database": "mydatabase",    
-    "host": "127.0.0.1",         
-    "dialect": "postgres"         
+    "username": "app_user",
+    "password": "app_password",
+    "database": "guardian_project",
+    "host": "127.0.0.1", 
+    "dialect": "mysql",
+    "port": 3306,
+    "dialectOptions": {
+      "connectTimeout": 60000
+    }
   },
   "test": {
-    "username": "myuser",
-    "password": "root",
-    "database": "mydatabase_test",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "username": "root",         
+    "password": "root",           
+    "database": "mydatabase_test",    
+    "host": "172.18.0.2",         
+    "dialect": "mysql",
+    "port": 3306 
   },
   "production": {
-    "username": "myuser",
-    "password": "root",
-    "database": "mydatabase_production",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+    "username": "root",         
+    "password": "root",           
+    "database": "mydatabase_production",    
+    "host": "172.18.0.2",         
+    "dialect": "mysql",
+    "port": 3306 
   }
 }
