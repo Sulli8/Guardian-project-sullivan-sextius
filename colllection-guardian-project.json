@@ -1,0 +1,142 @@
+{
+    "info": {
+      "name": "API Guardian Project",
+      "description": "Collection pour l'API des prescriptions avec JWT",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Get External API Info",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer <your_token>",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:3001/api/external",
+            "host": ["http://localhost:3001"],
+            "path": ["api", "external"]
+          }
+        }
+      },{
+        "info": {
+          "name": "Create User",
+          "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+        },
+        "item": [
+          {
+            "name": "Create User",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"password\": \"securepassword123\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:3001/api/create_user",
+                "host": ["http://localhost:3001"],
+                "path": ["api", "create_user"]
+              }
+            }
+          }
+        ]
+      }
+      ,
+      {
+        "name": "Add Prescription",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer <your_token>",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nom\": \"Paracetamol\",\n  \"posologie\": \"2x par jour\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3001/prescriptions",
+            "host": ["http://localhost:3001"],
+            "path": ["prescriptions"]
+          }
+        }
+      },
+      {
+        "name": "Get Prescriptions",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:3001/prescriptions",
+            "host": ["http://localhost:3001"],
+            "path": ["prescriptions"]
+          }
+        }
+      },
+      {
+        "name": "Update Prescription",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer <your_token>",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"nom\": \"Paracetamol\",\n  \"posologie\": \"1x par jour\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:3001/prescriptions/1",
+            "host": ["http://localhost:3001"],
+            "path": ["prescriptions", "1"]
+          }
+        }
+      },
+      {
+        "name": "Delete Prescription",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer <your_token>",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:3001/prescriptions/1",
+            "host": ["http://localhost:3001"],
+            "path": ["prescriptions", "1"]
+          }
+        }
+      }
+    ]
+  }
+  
