@@ -1,4 +1,4 @@
-const { User, Medicament, WebPushToken, Prescription } = require('./models'); // Assurez-vous que vos modèles sont correctement importés
+const { User, Medicament, WebPushToken, Prescription } = require('../models'); // Assurez-vous que vos modèles sont correctement importés
 const fs = require('fs');
 
 // Charger les données depuis le fichier data-test.json

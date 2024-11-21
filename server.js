@@ -9,6 +9,7 @@ const app = express();
 const port = process.env.SERVER_PORT || 4200;
 
 app.use(morgan('dev'));
+app.disable('x-powered-by')
 
 app.use(
   helmet({

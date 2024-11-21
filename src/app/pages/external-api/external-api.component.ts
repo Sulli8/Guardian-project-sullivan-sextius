@@ -2,7 +2,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { AuthClientConfig } from '@auth0/auth0-angular';
 import { HighlightModule } from 'ngx-highlightjs';
-import { ApiService } from 'src/app/api.service';
+import { ApiService } from 'src/services/api.service';
 
 @Component({
   selector: 'app-external-api',

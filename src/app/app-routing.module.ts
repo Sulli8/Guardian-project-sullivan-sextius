@@ -7,6 +7,7 @@ import { authGuardFn } from '@auth0/auth0-angular';
 import { FormPageComponent } from './components/form-page/form-page.component';
 import { CompletePageComponent } from './components/complete-page/complete-page.component';
 import { HomePageComponent } from './components/home-page/home-page.component';  // Import du nouveau composant
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 export const routes: Routes = [
   {
@@ -36,7 +37,12 @@ export const routes: Routes = [
   {
     path: 'home-page',  // La nouvelle route
     component: HomePageComponent,
-    pathMatch: 'full',
+    canActivate: [authGuardFn],
+  },
+  {
+    path: 'notification',  // La nouvelle route
+    component: NotificationsComponent,
+    canActivate: [authGuardFn],
   },
   {
     path: '',

@@ -1,0 +1,5 @@
+<p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
+<button [disabled]="!NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">Souscrire aux notifications</button>
+<pre *ngIf="sub">
+    <code [innerHTML]="sub | json"></code>
+  </pre>

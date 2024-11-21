@@ -1,0 +1,4 @@
+ng build --configuration production
+
+npm install -g http-server
+http-server ./dist/Guardian-project-sullivan-sextius

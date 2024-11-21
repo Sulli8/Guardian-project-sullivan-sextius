@@ -1,5 +1,5 @@
 {
-  "name": "login-demo",
+  "name": "guardian-project-sullivan-sextius",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -14,7 +14,7 @@
     "dev": "npm-run-all --parallel start server:api",
     "prod": "npm-run-all --parallel server:app server:api",
     "postbuild": "npm run copy:server",
-    "copy:server": "copyfiles server.js auth_config.json dist/login-demo"
+    "copy:server": "copyfiles server.js auth_config.json dist/guardian-project-sullivan-sextius"
   },
   "private": true,
   "dependencies": {
@@ -27,6 +27,7 @@
     "@angular/platform-browser": "^17.0.1",
     "@angular/platform-browser-dynamic": "^17.0.1",
     "@angular/router": "^17.0.1",
+    "@angular/service-worker": "^17.3.12",
     "@auth0/auth0-angular": "^2.1.0",
     "@fortawesome/angular-fontawesome": "^0.14.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
