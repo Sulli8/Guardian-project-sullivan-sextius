@@ -10,6 +10,7 @@ import { ExternalApiComponent } from './pages/external-api/external-api.componen
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { ListDrugsComponent } from './components/list-drugs/list-drugs.component';
 
 export const routes: Routes = [
   {
@@ -59,6 +60,11 @@ export const routes: Routes = [
   {
     path: 'notifications',
     component: NotificationsComponent,
+    canActivate: [authGuardFn]
+  },
+  {
+    path: 'list-drugs',
+    component: ListDrugsComponent,
     canActivate: [authGuardFn]
   },
   {

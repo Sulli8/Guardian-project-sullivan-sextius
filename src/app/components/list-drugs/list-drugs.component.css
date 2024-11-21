@@ -1,0 +1,60 @@
+/* Style pour le NavBar */
+app-nav-bar {
+    margin-bottom: 20px; /* Espace sous la barre de navigation */
+  }
+  
+  /* Style global du tableau */
+  .table {
+    width: 100%;
+    border-collapse: collapse; /* Évite les espaces entre les cellules */
+    margin-top: 20px; /* Espace au-dessus du tableau */
+  }
+  
+  /* Style pour l'en-tête du tableau */
+  .table thead {
+    background-color: #007bff; /* Couleur de fond bleu pour l'en-tête */
+    color: white; /* Texte en blanc */
+  }
+  
+  .table th {
+    padding: 10px;
+    text-align: left;
+    font-size: 16px;
+  }
+  
+  .table td {
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  /* Style pour chaque ligne du tableau */
+  .table tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Couleur de fond pour les lignes paires */
+  }
+  
+  .table tbody tr:hover {
+    background-color: #e9ecef; /* Fond gris clair au survol */
+  }
+  
+  /* Style pour les bordures du tableau */
+  .table, .table th, .table td {
+    border: 1px solid #ddd; /* Bordures légères */
+  }
+  
+  /* Style des cellules */
+  .table td, .table th {
+    text-align: center; /* Centrer le texte dans chaque cellule */
+  }
+  
+  /* Style de la table pour les petits écrans */
+  @media (max-width: 768px) {
+    .table thead {
+      font-size: 14px;
+    }
+    .table td, .table th {
+      font-size: 12px;
+      padding: 8px;
+    }
+  }
+  

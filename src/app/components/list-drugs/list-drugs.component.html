@@ -1,1 +1,18 @@
 <app-nav-bar></app-nav-bar>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let medicament of medications">
+        <td>{{ medicament.id }}</td>
+        <td>{{ medicament.name }}</td>
+        <td>{{ medicament.description }}</td>
+      </tr>
+    </tbody>
+  </table>
+  

@@ -16,7 +16,7 @@ module.exports = {
       lastName: {
         type: Sequelize.STRING
       },
-      token:{
+      token: {
         type: Sequelize.STRING
       },
       email: {
@@ -51,8 +51,8 @@ module.exports = {
         references: {
           model: 'Users',
           key: 'id',
-          onDelete: 'CASCADE', // Supprime les WebPushTokens si l'utilisateur est supprimé
-          onUpdate: 'CASCADE'  // Met à jour la clé étrangère si l'ID de l'utilisateur change
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE'
         },
         allowNull: false
       },
@@ -116,7 +116,7 @@ module.exports = {
         references: {
           model: 'Medicaments',
           key: 'id',
-          onDelete: 'SET NULL', // Si un médicament est supprimé, le champ devient NULL
+          onDelete: 'SET NULL',
           onUpdate: 'CASCADE'
         },
         allowNull: false
@@ -136,9 +136,15 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
   },
+
   async down(queryInterface, Sequelize) {
     // Supprimer les tables dans l'ordre inverse
+    await queryInterface.dropTable('Questionnaires_Questions');
+    await queryInterface.dropTable('Questionnaires');
+    await queryInterface.dropTable('Responses');
+    await queryInterface.dropTable('Questions');
     await queryInterface.dropTable('Prescriptions');
     await queryInterface.dropTable('Medicaments');
     await queryInterface.dropTable('WebPushTokens');

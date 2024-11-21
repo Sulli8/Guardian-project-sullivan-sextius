@@ -173,21 +173,29 @@ app.post('/api/subscription-web-push-token', async (req, res) => {
 let prescriptions = [];
 
 // Route POST pour ajouter un nouveau médicament et sa posologie
-app.post('/prescriptions', checkJwt, async (req, res) => {
-  const userId = req.auth.payload
-  console.log(userId)
- /*try {
-    const {medicamentId, quantity, dosage } = req.body;
-     const userId = req.auth.payload
-    // Validation des données
-    if (!medicamentId || !quantity || !dosage) {
-      return res.status(400).json({ message: 'Tous les champs sont requis : userId, medicamentId, quantity, dosage' });
+app.post('/api/prescriptions', checkJwt, async (req, res) => {
+  try {
+    const { medicationId, quantity, dosage } = req.body;
+    const tokenFromRequest = req.auth.payload.sub;  // Utilisation de user.auth.payload.sub pour récupérer le token
+
+    // Validation des données de la requête
+    if (!medicationId || !quantity || !dosage) {
+      return res.status(400).json({ message: 'Tous les champs sont requis : medicamentId, quantity, dosage.' });
     }
 
-    // Création de la prescription dans la base de données
+    // Vérifier si l'utilisateur existe en recherchant par le token
+    const userExists = await Users.findOne({
+      where: { token: tokenFromRequest }  // Recherche de l'utilisateur où le champ `token` correspond au token JWT
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé ou token invalide.' });
+    }
+
+    // Créer la prescription dans la base de données
     const newPrescription = await Prescription.create({
-      userId,
-      medicamentId,
+      userId: userExists.id,  // Utilisation de l'ID de l'utilisateur trouvé
+      medicamentId: medicationId,
       quantity,
       dosage,
     });
@@ -197,12 +205,34 @@ app.post('/prescriptions', checkJwt, async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la création de la prescription :', error);
     res.status(500).json({ message: 'Erreur serveur lors de la création de la prescription.' });
-  }*/
+  }
 });
 
-// Route GET pour récupérer la liste des médicaments et leurs posologies
-app.get('/api/prescriptions', (req, res) => {
-  res.status(200).json(prescriptions);
+
+app.get('/api/list-prescriptions', checkJwt, async (req, res) => {
+  try {
+    const tokenFromRequest = req.auth.payload.sub;  // Utilisation du `sub` dans le payload du token
+
+    // Vérification si l'utilisateur existe en recherchant par le token
+    const userExists = await Users.findOne({
+      where: { token: tokenFromRequest }  // Recherche de l'utilisateur dont le `token` correspond à `sub`
+    });
+
+    if (!userExists) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé ou token invalide.' });
+    }
+
+    // Si l'utilisateur existe, récupérer ses prescriptions
+    const prescriptions = await Prescription.findAll({
+      where: { userId: userExists.id }
+    });
+
+    // Réponse avec la liste des prescriptions
+    res.status(200).json(prescriptions);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des prescriptions :', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la récupération des prescriptions.' });
+  }
 });
 
 app.get('/api/medicaments', async (req, res) => {
@@ -250,24 +280,35 @@ app.put('/prescriptions/:id', checkJwt, async (req, res) => {
 
 
 
-app.delete('/prescriptions/:id', checkJwt, async (req, res) => {
-  const { id } = req.params;
-
+app.delete('/api/prescriptions/:id', checkJwt, async (req, res) => {
   try {
-    // Chercher la prescription dans la base de données en utilisant l'ID
-    const prescription = await Prescription.findOne({ where: { id } });
+    const prescriptionId = req.params.id;
+    const userIdFromToken = req.auth.payload.sub; // L'ID de l'utilisateur provenant du token JWT
+    
+    // Vérifier si l'utilisateur existe dans la table Users
+    const user = await Users.findOne({ where: { token: userIdFromToken } });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
 
+    // Vérifier si la prescription existe
+    const prescription = await Prescription.findByPk(prescriptionId);
     if (!prescription) {
-      return res.status(404).json({ message: 'Prescription non trouvée' });
+      return res.status(404).json({ message: 'Prescription non trouvée.' });
+    }
+
+    // Vérifier que l'utilisateur authentifié est celui qui a créé la prescription
+    if (prescription.userId !== user.id) {
+      return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à supprimer cette prescription.' });
     }
 
     // Supprimer la prescription
     await prescription.destroy();
 
-    res.status(200).json({ message: 'Prescription supprimée avec succès' });
+    res.status(200).json({ message: 'Prescription supprimée avec succès.' });
   } catch (error) {
-    console.error('Erreur lors de la suppression de la prescription :', error);
-    res.status(500).json({ message: 'Erreur serveur lors de la suppression de la prescription.' });
+    console.error('Erreur lors de la suppression de la prescription:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la suppression.' });
   }
 });
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import config from '../../auth_config.json';
 import { Observable } from 'rxjs';
 
@@ -33,4 +33,16 @@ export class ApiService {
     console.log("PRESCRIPTION : ", prescription);
     return this.http.post<any>(url, prescription);
   }
+
+  // GET request for list of prescriptions
+  getPrescriptions(): Observable<any> {
+    const url = `${config.apiUri}/api/list-prescriptions`; // URL de l'API pour récupérer la liste des prescriptions
+    return this.http.get<any>(url);
+  }
+
+    // DELETE request for deleting a prescription
+    deletePrescription(id: number): Observable<any> {
+      const url = `${config.apiUri}/api/prescriptions/${id}`; // Assurez-vous que l'API accepte les requêtes DELETE sur ce point de terminaison
+      return this.http.delete<any>(url);
+    }
 }

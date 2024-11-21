@@ -1,1 +1,42 @@
 <app-nav-bar></app-nav-bar>
+<div class="prescriptions-container">
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="prescriptions.length > 0">
+    <h2>Liste des prescriptions</h2>
+    
+    <!-- Tableau pour afficher les prescriptions -->
+    <table class="prescriptions-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Medicament ID</th>
+          <th>Quantité</th>
+          <th>Posologie</th>
+          <th>Date de création</th>
+          <th>Date de mise à jour</th>
+          <th>Actions</th> <!-- Colonne pour les actions (suppression) -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prescription of prescriptions">
+          <td>{{ prescription.id }}</td>
+          <td>{{ prescription.medicamentId }}</td>
+          <td>{{ prescription.quantity }}</td>
+          <td>{{ prescription.dosage }}</td>
+          <td>{{ prescription.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ prescription.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>
+            <button (click)="deletePrescription(prescription.id)" class="btn btn-danger">Supprimer</button> <!-- Bouton de suppression -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="prescriptions.length === 0 && !errorMessage">
+    <p>Aucune prescription trouvée.</p>
+  </div>
+</div>
