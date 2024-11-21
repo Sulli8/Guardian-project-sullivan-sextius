@@ -5,7 +5,7 @@ const cors = require('cors');
 const { auth } = require('express-oauth2-jwt-bearer');
 const authConfig = require('./auth_config.json');
 //moedesl
-const { User, Prescription } = require('./models'); 
+const { Users, Prescription, Medicaments } = require('./models'); 
 
 const app = express();
 
@@ -57,13 +57,13 @@ app.post('/api/create_user', async (req, res) => {
     }
 
     // Vérification si l'utilisateur existe déjà
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await Users.findOne({ where: { email } });
     if (existingUser) {
       return res.status(409).json({ message: 'Un utilisateur avec cet email existe déjà.' });
     }
 
     // Création de l'utilisateur
-    const newUser = await User.create({
+    const newUser = await Users.create({
       firstName,
       lastName,
       email,
@@ -90,7 +90,7 @@ app.put('/api/users/:id', async (req, res) => {
     }
 
     // Trouver l'utilisateur dans la base de données par son ID
-    const user = await User.findByPk(id);
+    const user = await Users.findByPk(id);
 
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -118,7 +118,7 @@ app.delete('/api/users/:id', async (req, res) => {
     const { id } = req.params;  // Récupérer l'ID de l'utilisateur à supprimer
 
     // Trouver l'utilisateur dans la base de données par son ID
-    const user = await User.findByPk(id);
+    const user = await Users.findByPk(id);
 
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -174,11 +174,13 @@ let prescriptions = [];
 
 // Route POST pour ajouter un nouveau médicament et sa posologie
 app.post('/prescriptions', checkJwt, async (req, res) => {
-  try {
-    const { userId, medicamentId, quantity, dosage } = req.body;
-
+  const userId = req.auth.payload
+  console.log(userId)
+ /*try {
+    const {medicamentId, quantity, dosage } = req.body;
+     const userId = req.auth.payload
     // Validation des données
-    if (!userId || !medicamentId || !quantity || !dosage) {
+    if (!medicamentId || !quantity || !dosage) {
       return res.status(400).json({ message: 'Tous les champs sont requis : userId, medicamentId, quantity, dosage' });
     }
 
@@ -195,14 +197,31 @@ app.post('/prescriptions', checkJwt, async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la création de la prescription :', error);
     res.status(500).json({ message: 'Erreur serveur lors de la création de la prescription.' });
-  }
+  }*/
 });
 
 // Route GET pour récupérer la liste des médicaments et leurs posologies
-app.get('/prescriptions', (req, res) => {
+app.get('/api/prescriptions', (req, res) => {
   res.status(200).json(prescriptions);
 });
 
+app.get('/api/medicaments', async (req, res) => {
+  try {
+    // Récupérer tous les médicaments
+    const medicaments = await Medicaments.findAll();
+
+    // Réponse avec les données
+    res.status(200).json(medicaments);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des médicaments:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
+});
 app.put('/prescriptions/:id', checkJwt, async (req, res) => {
   const { id } = req.params;
   const { nom, posologie } = req.body;

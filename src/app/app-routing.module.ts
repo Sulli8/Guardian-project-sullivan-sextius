@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
+import { authGuardFn } from '@auth0/auth0-angular';
+import { CompletePageComponent } from './components/complete-page/complete-page.component';
+import { FormPageComponent } from './components/form-page/form-page.component';
+import { HomePageComponent } from './components/home-page/home-page.component'; // Import du nouveau composant
+import {  ListPrescriptionsComponent } from './components/list-prescriptions/list-prescriptions.component';
+import { PrescriptionFormComponent } from './components/prescription-form/prescription-form.component';
+import { ErrorComponent } from './pages/error/error.component';
+import { ExternalApiComponent } from './pages/external-api/external-api.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
-import { ExternalApiComponent } from './pages/external-api/external-api.component';
-import { ErrorComponent } from './pages/error/error.component';
-import { authGuardFn } from '@auth0/auth0-angular';
-import { FormPageComponent } from './components/form-page/form-page.component';
-import { CompletePageComponent } from './components/complete-page/complete-page.component';
-import { HomePageComponent } from './components/home-page/home-page.component';  // Import du nouveau composant
 import { NotificationsComponent } from './components/notifications/notifications.component';
 
 export const routes: Routes = [
@@ -35,14 +37,29 @@ export const routes: Routes = [
     canActivate: [authGuardFn],
   },
   {
-    path: 'home-page',  // La nouvelle route
+    path: 'home-page',
     component: HomePageComponent,
     canActivate: [authGuardFn],
   },
   {
-    path: 'notification',  // La nouvelle route
-    component: NotificationsComponent,
+    path: 'profil',
+    component: ProfileComponent,
     canActivate: [authGuardFn],
+  },
+  {
+    path: 'list-prescriptions',
+    component: ListPrescriptionsComponent,
+    canActivate: [authGuardFn],
+  },
+  {
+    path: 'add-prescription',
+    component: PrescriptionFormComponent,
+    canActivate: [authGuardFn]
+  },
+  {
+    path: 'notifications',
+    component: NotificationsComponent,
+    canActivate: [authGuardFn]
   },
   {
     path: '',

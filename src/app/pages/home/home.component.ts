@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { HomeContentComponent } from './../../components/home-content/home-content.component';
+import { IntroduceComponent } from '../../components/introduce/introduce.component';
 import { LoadingComponent } from './../../components/loading/loading.component';
 import { AsyncPipe, NgIf } from '@angular/common';
 
@@ -10,7 +10,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
   styleUrls: ['./home.component.css'],
   standalone: true,
   imports: [
-    HomeContentComponent,
+    IntroduceComponent,
     LoadingComponent,
     AsyncPipe,
     NgIf

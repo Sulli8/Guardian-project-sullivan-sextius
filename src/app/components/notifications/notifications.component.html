@@ -1,5 +1,17 @@
-<p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
-<button [disabled]="!NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">Souscrire aux notifications</button>
-<pre *ngIf="sub">
+<app-nav-bar></app-nav-bar>
+<div class="notifications-container">
+  <p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
+
+<div class="buttons-container">
+  <button [disabled]="!NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">Souscrire aux notifications</button>
+  <div *ngIf="NotifsAllowed" class="buttons-container-child">
+    <button  class="button is-primary">Autoriser les relances</button>
+    <button  class="button is-primary">Supprimer mes données</button>
+  </div>
+</div>
+</div>
+
+
+<!--<pre *ngIf="sub">
     <code [innerHTML]="sub | json"></code>
-  </pre>
+  </pre>-->

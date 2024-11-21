@@ -1,0 +1,56 @@
+<app-nav-bar></app-nav-bar>
+<div class="container mt-5">
+    <h2>Ajouter une prescription</h2>
+    <form [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
+  
+      <!-- Liste des médicaments -->
+      <div class="form-group">
+        <label for="medicationId">Médicament</label>
+        <select id="medicationId" class="form-control" formControlName="medicationId">
+          <option value="" disabled selected>Sélectionnez un médicament</option>
+          <option *ngFor="let medication of medications" [value]="medication.id">
+            {{ medication.name }}
+          </option>
+        </select>
+        <div *ngIf="prescriptionForm.get('medicationId')?.invalid && prescriptionForm.get('medicationId')?.touched" class="text-danger">
+          Vous devez sélectionner un médicament.
+        </div>
+      </div>
+  
+      <!-- Quantité -->
+      <div class="form-group">
+        <label for="quantity">Quantité</label>
+        <input
+          id="quantity"
+          type="number"
+          class="form-control"
+          formControlName="quantity"
+          placeholder="Entrez la quantité"
+        />
+        <div *ngIf="prescriptionForm.get('quantity')?.invalid && prescriptionForm.get('quantity')?.touched" class="text-danger">
+          La quantité doit être un nombre supérieur à 0.
+        </div>
+      </div>
+  
+      <!-- Dosage -->
+      <div class="form-group">
+        <label for="dosage">Dosage</label>
+        <input
+          id="dosage"
+          type="text"
+          class="form-control"
+          formControlName="dosage"
+          placeholder="Entrez le dosage"
+        />
+        <div *ngIf="prescriptionForm.get('dosage')?.invalid && prescriptionForm.get('dosage')?.touched" class="text-danger">
+          Le dosage est requis.
+        </div>
+      </div>
+  
+      <!-- Bouton de soumission -->
+      <button type="submit" class="btn btn-primary" [disabled]="prescriptionForm.invalid">
+        Soumettre
+      </button>
+    </form>
+  </div>
+  

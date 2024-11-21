@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { faUser, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faPowerOff, faHome } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '@auth0/auth0-angular';
 import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -31,7 +31,7 @@ export class NavBarComponent {
   isCollapsed = true;
   faUser = faUser;
   faPowerOff = faPowerOff;
-
+  home = faHome
   constructor(
     public auth: AuthService,
     @Inject(DOCUMENT) private doc: Document

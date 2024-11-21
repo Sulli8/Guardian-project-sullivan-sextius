@@ -2,3 +2,8 @@ ng build --configuration production
 
 npm install -g http-server
 http-server ./dist/Guardian-project-sullivan-sextius
+
+cd Guardian-project-sullivan-sextius
+npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate
+cd data-test
+node insert-data-test

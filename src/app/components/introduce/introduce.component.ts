@@ -4,9 +4,9 @@ import { AuthService } from '@auth0/auth0-angular';
 import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 @Component({
-  selector: 'app-home-content',
-  templateUrl: './home-content.component.html',
-  styleUrls: ['./home-content.component.css'],
+  selector: 'app-introduce',
+  templateUrl: './introduce.component.html',
+  styleUrls: ['./introduce.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -15,7 +15,7 @@ import { Router, RouterLink } from '@angular/router';
     RouterLink,
   ]
 })
-export class HomeContentComponent {
+export class IntroduceComponent {
 
   constructor(
     public auth: AuthService, private router: Router,

@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class WebPushToken extends Model {
+  class WebPushTokens extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  WebPushToken.init({
+  WebPushTokens.init({
     token: DataTypes.STRING,
     userId: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'WebPushToken',
+    modelName: 'WebPushTokens',
   });
-  return WebPushToken;
+  return WebPushTokens;
 };

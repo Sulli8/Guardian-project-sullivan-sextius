@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { ApiService } from '../../../services/api.service';
-
+import { CommonModule } from '@angular/common';
+import { NavBarComponent } from '../nav-bar/nav-bar.component';
 @Component({
+
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.scss']
+  styleUrls: ['./notifications.component.css'],
+  imports: [CommonModule,NavBarComponent],
+  standalone:true
 })
 export class NotificationsComponent {
   displayMessage = false;

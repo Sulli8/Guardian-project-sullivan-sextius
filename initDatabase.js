@@ -1,5 +1,5 @@
 const sequelize = require('./database');
-const User = require('./models/User');
+const User = require('./models/Users');
 const WebPushToken = require('./models/WebPushToken');
 
 (async () => {
