@@ -1,6 +1,6 @@
 const sequelize = require('./database');
-const User = require('./models/Users');
-const WebPushToken = require('./models/WebPushToken');
+const User = require('./models-mysql/Users');
+const WebPushToken = require('./models-mysql/WebPushToken');
 
 (async () => {
   try {

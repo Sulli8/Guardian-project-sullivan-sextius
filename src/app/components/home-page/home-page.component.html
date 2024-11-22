@@ -1,10 +1,20 @@
 <app-nav-bar></app-nav-bar>
 <div class="home-page-container">
     <h1>HomePage</h1>
-    
-    <div class="buttons-container">
-      <button class="btn-view-prescriptions" (click)="viewPrescriptions()">Voir la liste des prescriptions</button>
-      <button class="btn-add-prescription" (click)="addPrescription()">Ajouter une prescription</button>
+   <div class="cards">
+    <div class="card" (click)="viewPrescriptions()">
+      <fa-icon [icon]="faPrescriptionBottle" class="prescription-icon"></fa-icon>
+      <div class="icon">
+        <p class="title">See prescriptions</p>
+      </div>
     </div>
+
+    <div class="card" (click)="addPrescription()">
+      <fa-icon [icon]="faPlus" class="prescription-icon"></fa-icon>
+      <div class="icon">
+        <p class="title">Add a prescription</p>
+      </div>
+    </div>
+   </div>
   </div>
   

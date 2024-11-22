@@ -1,13 +1,49 @@
 .container {
     max-width: 600px;
     margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 80vh;
   }
-  
+  .prescriptionForm {
+    width: 100%;
+  }
   .form-group {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
     margin-bottom: 1.5rem;
   }
-  
+  .form-group > input {
+    padding: 5px;
+  }
   .text-danger {
     font-size: 0.85rem;
   }
   
+  .select-form {
+    padding: 10px;
+    background-color: #fff;
+    color: #0D0C14;
+    border: none;
+    font-family: "Poppins", serif;
+    font-weight: bold;
+    font-style: normal;
+  }
+  .input-submit {
+    border: none;
+    padding: 10px;
+
+    background-color: #fff;
+    border-radius: 5px;
+    color: #0D0C14;
+  }
+
+
+  .input-submit:hover{
+    background-color: #ffffff6b;
+  }
+

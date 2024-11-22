@@ -16,25 +16,43 @@
       </button>
 
       <div
-        class="collapse navbar-collapse"
+      
         id="navbarNav"
-        [ngbCollapse]="isCollapsed"
+       
       >
+      <fa-icon [icon]="faBars" class="burger-icon" (click)="toggleMenu()"></fa-icon>
 
-        <ul class="navbar-nav d-none d-md-block">
+        <ul [ngClass]="{'show-menu': isMenuVisible}" class="navbar-nav d-none d-md-block">
+      <div>
+        
+      </div>
+         <div (click)="link_home()" class="icon-guardian">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+
+            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#fff" stroke="none">
+            <path d="M1700 4394 c-621 -242 -842 -333 -863 -353 -44 -43 -51 -123 -51 -631 -1 -674 42 -1046 166 -1418 141 -426 475 -845 963 -1212 234 -176 580 -380 645 -380 37 0 192 79 365 187 611 381 1059 881 1236 1382 72 203 131 517 161 851 16 182 17 999 1 1114 -10 66 -16 84 -40 107 -21 20 -236 109 -853 349 -454 177 -841 324 -860 326 -28 4 -202 -61 -870 -322z m1530 -183 c355 -139 691 -270 747 -292 l102 -40 8 -47 c4 -26 8 -231 8 -457 -1 -443 -12 -619 -60 -903 -44 -259 -95 -434 -175 -599 -172 -355 -523 -724 -973 -1023 -118 -79 -310 -190 -327 -190 -32 0 -387 223 -528 332 -413 320 -694 662 -828 1009 -69 178 -128 470 -159 779 -28 283 -30 1068 -3 1096 15 14 1506 592 1523 590 11 -2 310 -117 665 -255z"/>
+            </g>
+            </svg>
+            Guardian
+         </div>
           <li class="nav-item">
-            <fa-icon [icon]="home" class="mr-3"></fa-icon> 
+            
             <a routerLink="/" class="nav-link">Home</a>
           </li>
 
           <li class="nav-item">
-            <fa-icon [icon]="home" class="mr-3"></fa-icon> 
+          
             <a routerLink="/notifications" class="nav-link">Notifications</a>
           </li>
 
           <li class="nav-item">
-            <fa-icon [icon]="home" class="mr-3"></fa-icon> 
+            
             <a routerLink="/list-drugs" class="nav-link">Liste des médicaments</a>
+          </li>
+
+          <li class="nav-item">
+            
+            <a routerLink="/documentation" class="nav-link">Documentation</a>
           </li>
 
 
@@ -58,7 +76,7 @@
           ngbDropdown
         >
            <a routerLink="/profile" class="dropdown-item dropdown-profile">
-            <fa-icon [icon]="faUser" class="mr-3"></fa-icon> Profile
+           Profile
           </a>
         </li>
           <!-- Fullsize dropdown: show if authenticated -->
@@ -68,12 +86,12 @@
             ngbDropdown
           >
         
-          <button
+          <a
             (click)="logout()"
-            class="btn btn-link dropdown-item"
+            class="logout btn btn-link dropdown-item"
           >
-            <fa-icon [icon]="faPowerOff" class="mr-3"></fa-icon> Log out
-          </button>
+          Log out
+          </a>
           </li>
           <!-- /Fullsize dropdown -->
         </ul>
@@ -92,7 +110,7 @@
           </button>
 
         </ul>
-        <!-- /Responsive login button -->
+     
 
       
       </div>

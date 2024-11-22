@@ -1,7 +1,8 @@
 ul {
     list-style: none;
     display: flex;
-    gap: 20px;
+    gap: 40px;
+    align-items: center;    
 }
 .nav-item {
     display: flex;
@@ -10,6 +11,8 @@ ul {
     gap:10px;
 }
 a {
+    color: #ffffff91;
+    font-weight: 400;
     text-decoration: none;
 }
 .dropdown {
@@ -17,9 +20,76 @@ a {
     flex-direction: column;
     gap: 20px;
 }
-
+.logout {
+    cursor: pointer;
+}
+.icon-guardian {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+}
+a:hover {
+    transition: 0.2s;
+    color:#fff;
+}
 .dropdown-menu {
     display: flex;
     justify-content: center;
     flex-direction: column;
 }
+.faBars {
+    display: flex;
+  justify-content: right;
+  align-content: center;
+  padding: 10px;
+  font-size: 30px;
+  cursor: pointer;
+}
+.show-menu {
+    display: flex;
+}
+@media (max-width: 835px) {
+    .menu-computer {
+        display: none;
+    }
+    .burger-icon {
+        display: flex;
+        display: flex;
+        font-size: 30px;
+        justify-content: right;
+        padding: 10px;
+        
+        cursor: pointer;
+    }
+    .burger-icon:hover {
+        transition:0.3s;
+        color: #ffffffa7;
+    }
+    ul {
+        display: flex; /* Nécessaire si vous voulez que le contenu soit organisé en flex */
+        flex-direction: column;
+        align-items: center;
+        max-height: 0; /* Menu caché */
+        overflow: hidden; /* Cache le contenu qui dépasse */
+        transition: max-height 0.5s ease, opacity 0.5s ease; /* Transition fluide */
+        opacity: 0; /* Commence invisible */
+      }
+      
+      ul.show-menu {
+        max-height: 500px; /* Ajustez cette valeur en fonction de la hauteur maximale du menu */
+        opacity: 1; /* Rendre visible */
+      }
+
+.responsive-burger {
+    display: flex;
+}
+}
+
+.menu-icon {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  

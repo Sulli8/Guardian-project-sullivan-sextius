@@ -15,21 +15,17 @@
           <th>Medicament ID</th>
           <th>Quantité</th>
           <th>Posologie</th>
-          <th>Date de création</th>
-          <th>Date de mise à jour</th>
           <th>Actions</th> <!-- Colonne pour les actions (suppression) -->
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let prescription of prescriptions">
-          <td>{{ prescription.id }}</td>
-          <td>{{ prescription.medicamentId }}</td>
+          <td>{{ prescription._id }}</td>
+          <td>{{ prescription.medicationId }}</td>
           <td>{{ prescription.quantity }}</td>
           <td>{{ prescription.dosage }}</td>
-          <td>{{ prescription.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-          <td>{{ prescription.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
           <td>
-            <button (click)="deletePrescription(prescription.id)" class="btn btn-danger">Supprimer</button> <!-- Bouton de suppression -->
+            <button (click)="deletePrescription(prescription._id)" class="btn btn-danger">Supprimer</button> <!-- Bouton de suppression -->
           </td>
         </tr>
       </tbody>

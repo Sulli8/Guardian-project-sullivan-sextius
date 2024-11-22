@@ -7,3 +7,8 @@ cd Guardian-project-sullivan-sextius
 npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate
 cd data-test
 node insert-data-test
+
+Password user mongoDB 
+yj0ynwO9rt2GYEtL
+
+npm install mongodb

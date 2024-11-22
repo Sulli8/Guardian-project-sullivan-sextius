@@ -23,7 +23,7 @@ export class ListPrescriptionsComponent implements OnInit {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette prescription ?')) {
       this.apiService.deletePrescription(id).subscribe({
         next: () => {
-          this.prescriptions = this.prescriptions.filter(p => p.id !== id); // Supprimer localement la prescription supprimée
+          this.prescriptions = this.prescriptions.filter(p => p._id !== id); // Supprimer localement la prescription supprimée
         },
         error: (err) => {
           this.errorMessage = 'Erreur lors de la suppression de la prescription.';

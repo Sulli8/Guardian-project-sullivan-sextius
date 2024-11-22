@@ -1,14 +1,14 @@
 <app-nav-bar></app-nav-bar>
-<div class="container mt-5">
-    <h2>Ajouter une prescription</h2>
-    <form [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
+<div class="container">
+    <h2>Add a prescription</h2>
+    <form class="prescriptionForm" [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
   
       <!-- Liste des médicaments -->
       <div class="form-group">
-        <label for="medicationId">Médicament</label>
-        <select id="medicationId" class="form-control" formControlName="medicationId">
-          <option value="" disabled selected>Sélectionnez un médicament</option>
-          <option *ngFor="let medication of medications" [value]="medication.id">
+        <label for="medicationId">Medication</label>
+        <select id="medicationId" class="select-form form-control" formControlName="medicationId">
+          <option value="" disabled selected>Select a medication</option>
+          <option *ngFor="let medication of medications" [value]="medication._id">
             {{ medication.name }}
           </option>
         </select>
@@ -48,7 +48,7 @@
       </div>
   
       <!-- Bouton de soumission -->
-      <button type="submit" class="btn btn-primary" [disabled]="prescriptionForm.invalid">
+      <button type="submit" class="input-submit btn btn-primary" [disabled]="prescriptionForm.invalid">
         Soumettre
       </button>
     </form>

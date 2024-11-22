@@ -42,15 +42,15 @@ export class PrescriptionFormComponent implements OnInit {
   onSubmit(): void {
     if (this.prescriptionForm.valid) {
       const formData = this.prescriptionForm.value;
-  
+      console.log(formData);
+      
       // Rechercher le médicament sélectionné par son ID
       const selectedMedication = this.medications.find(
-        (med) => med.id === +formData.medicationId // Convertir l'ID du formulaire en nombre si nécessaire
+        (med) => med._id === formData.medicationId // Comparer directement les deux comme des chaînes
       );
-  
       // Construire l'objet prescriptionData
       const prescriptionData = {
-        medicationId: selectedMedication?.id || null, // Inclure l'ID du médicament
+        medicationId: selectedMedication?._id || null, // Inclure l'ID du médicament
         medicationName: selectedMedication?.name || 'Médicament inconnu',
         quantity: formData.quantity,
         dosage: formData.dosage,

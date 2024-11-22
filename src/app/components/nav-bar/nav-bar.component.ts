@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
-import { faUser, faPowerOff, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faBars} from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '@auth0/auth0-angular';
-import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule, DOCUMENT, NgIf } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   NgbCollapse,
@@ -9,7 +9,7 @@ import {
   NgbDropdownMenu,
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-nav-bar',
@@ -25,22 +25,27 @@ import { RouterLink } from '@angular/router';
     AsyncPipe,
     NgIf,
     RouterLink,
+    CommonModule
   ],
 })
 export class NavBarComponent {
   isCollapsed = true;
-  faUser = faUser;
-  faPowerOff = faPowerOff;
-  home = faHome
-  constructor(
+  faBars = faBars;
+  isMenuVisible = false; // État du menu
+
+  constructor(private router:Router,
     public auth: AuthService,
     @Inject(DOCUMENT) private doc: Document
   ) {}
-
+  toggleMenu() {
+    this.isMenuVisible = !this.isMenuVisible; // Alterne l'état du menu
+  }
   loginWithRedirect() {
     this.auth.loginWithRedirect();
   }
-
+  link_home(){
+    this.router.navigate(['/home-page'])
+  }
   logout() {
     this.auth.logout({ logoutParams: { returnTo: this.doc.location.origin } });
   }
