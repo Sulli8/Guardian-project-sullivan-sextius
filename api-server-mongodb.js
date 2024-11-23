@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
+const webPush = require('web-push');  // Importer la bibliothèque WebPush
 const { auth } = require('express-oauth2-jwt-bearer');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const authConfig = require('./auth_config.json');
@@ -16,6 +17,12 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+webPush.setVapidDetails(
+  'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
+  'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
+  '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
+);
 
 let db;
 
@@ -34,7 +41,9 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(
   cors({
-    origin: authConfig.appUri,
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json());
@@ -299,6 +308,97 @@ app.post('/api/responses', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Error submitting response' });
   }
 });
+
+
+
+app.post('/api/prescriptions', checkJwt, async (req, res) => {
+    try {
+      // Extraire les données de la requête
+      const { medicationId, quantity, dosage } = req.body;
+  console.log(medicationId, quantity, dosage)
+      // Récupérer le token du payload JWT
+      const tokenFromJwt = req.auth.payload.sub;
+  
+      // Vérifier si un utilisateur avec ce token existe dans la base de données
+      const user = await db.collection('users').findOne({ token: tokenFromJwt });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Vérification de la présence des informations nécessaires
+      if (!medicationId || !quantity || !dosage) {
+        return res.status(400).json({ message: 'All fields are required: medicationId, quantity, dosage.' });
+      }
+  
+      // Créer la prescription dans la collection "prescriptions"
+      const prescription = await db.collection('prescriptions').insertOne({
+        userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
+        medicationId,
+        quantity,
+        dosage,
+      });
+  
+      // Répondre avec un message de succès
+      res.status(201).json({
+        message: "Prescription created successfully",
+        prescriptionId: prescription.insertedId,
+      });
+    } catch (error) {
+      console.error("Error creating prescription:", error);
+      res.status(500).json({ message: 'Error creating prescription' });
+    }
+  });
+
+
+  app.post('/api/subscription', checkJwt, async (req, res) => {
+    try {
+      // Extraire les données de la requête
+      const { webpushtoken } = req.body;  // Le token WebPush
+      const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
+      
+      // Vérifier si un utilisateur avec ce token existe dans la base de données
+      const user = await db.collection('users').findOne({ token: tokenFromJwt });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      console.log(webpushtoken)
+  
+      // Créer un abonnement (webpushtoken) pour cet utilisateur
+      const subscription = await db.collection('webpushtokens').insertOne({
+        userId: user._id, // Utiliser l'_id de l'utilisateur trouvé
+        webpushtoken: webpushtoken,  // Le token WebPush reçu
+      });
+  
+      // Créer le payload de la notification
+      const notificationPayload = {
+        title: "New notification !",
+        body: "Vous avez un nouveau message.",
+        icon: "/images/icon.png", // Icône de la notification (si vous en avez)
+        url: "https://votre-site.com/nouvelle-notification", // L'URL que l'utilisateur doit visiter lorsqu'il clique sur la notification
+      };
+  
+      // Configurer l'option de notification
+      const payload = JSON.stringify(notificationPayload);
+  
+      // Envoi de la notification WebPush
+      await webPush.sendNotification(webpushtoken, payload)
+        .then(() => {
+          console.log('Notification sent successfully');
+        })
+        .catch(error => {
+          console.error('Error sending notification:', error);
+        });
+  
+      // Répondre avec un message de succès
+      res.status(201).json({
+        message: "WebPush token created and notification sent successfully",
+      });
+    } catch (error) {
+      console.error("Error creating webpushtoken or sending notification:", error);
+      res.status(500).json({ message: 'Error creating webpushtoken or sending notification' });
+    }
+  });
+
 
 // Start server
 const port = process.env.PORT || 3001;

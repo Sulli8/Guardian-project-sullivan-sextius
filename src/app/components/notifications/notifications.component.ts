@@ -15,8 +15,8 @@ export class NotificationsComponent {
   displayMessage = false;
   NotifsAllowed = false;
   sub:any;
-  PUBLIC_VAPID_KEY_OF_SERVER = 'BISCiKs78JcYBoUgKqEMDMdeqZehBmtIBrvkotjdEKDHHYO87hvYy3H9VTYwWXnjHdMX_m2XmXn_nL6C1dxxw8o';
-
+  PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
+  PRIVATE_VAPID_KEY_OF_SERVER = ''
   constructor(readonly swPush: SwPush,private api:ApiService) {
     if (Notification.permission === 'granted') {
       console.log('notif granted');
