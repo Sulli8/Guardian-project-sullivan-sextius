@@ -4,7 +4,7 @@
   "authorizationParams": {
     "audience": "http://localhost:3001"
   },
-  "apiUri": "http://localhost:3001",
+  "apiUri": "https://rocky-eyrie-99305-fe1b65813fc4.herokuapp.com",
   "appUri": "http://localhost:4200",
   "errorPath": "/error"
 }
