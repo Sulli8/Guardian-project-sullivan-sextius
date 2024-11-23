@@ -50,7 +50,7 @@ a:hover {
 .show-menu {
     display: flex;
 }
-@media (max-width: 835px) {
+@media (max-width: 970px) {
     .menu-computer {
         display: none;
     }
