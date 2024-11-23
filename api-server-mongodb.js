@@ -353,16 +353,15 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
   app.post('/api/subscription', checkJwt, async (req, res) => {
     try {
       // Extraire les données de la requête
-      const { webpushtoken } = req.body;  // Le token WebPush
+      const  webpushtoken  = JSON.stringify(req.body);  // Le token WebPush
       const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
-      
+      console.log(req.body)
       // Vérifier si un utilisateur avec ce token existe dans la base de données
       const user = await db.collection('users').findOne({ token: tokenFromJwt });
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      console.log(webpushtoken)
-  
+      
       // Créer un abonnement (webpushtoken) pour cet utilisateur
       const subscription = await db.collection('webpushtokens').insertOne({
         userId: user._id, // Utiliser l'_id de l'utilisateur trouvé
