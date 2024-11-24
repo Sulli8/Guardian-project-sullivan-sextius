@@ -38,7 +38,7 @@ export class NotificationsComponent {
   }
 
 
-  public async subscribeToPush() {
+/*  public async subscribeToPush() {
     console.log('Starting subscription process...');
     try {
       if (Notification.permission !== 'granted') {
@@ -77,6 +77,22 @@ export class NotificationsComponent {
     }
     console.log('Subscription process complete.');
   }
-  
+  */
+
+  public async subscribeToPush() {
+    try {
+      const sub = await this.swPush.requestSubscription({
+        serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
+      });
+      console.log('sub',sub);
+      this.sub = sub;
+      this.api.postSubscription(sub).subscribe(res=>{
+        console.log('res',res);
+      });
+      
+    } catch (err) {
+      console.error('Could not subscribe due to:', err);
+    }
+  }
 
 }

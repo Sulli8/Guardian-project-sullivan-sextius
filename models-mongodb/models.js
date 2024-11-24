@@ -73,9 +73,53 @@ const webPushTokenSchema = new mongoose.Schema({
 });
 const WebPushToken = mongoose.model('WebPushTokens', webPushTokenSchema);  // Collection name in plural form
 
+
+const mongoose = require('mongoose');
+
+const notificationSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users', // Référence à la collection "users"
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  body: {
+    type: String,
+    required: true,
+  },
+  icon: {
+    type: String,
+    default: '/default-icon.png',
+  },
+  badge: {
+    type: String,
+    default: '/badge-icon.png',
+  },
+  status: {
+    type: String,
+    enum: ['unread', 'read'],
+    default: 'unread',
+  },
+  sentAt: {
+    type: Date,
+    default: Date.now,
+  },
+  url: String, // Optionnel, lien de redirection
+  data: {
+    type: Object,
+    default: {}, // Données supplémentaires (par exemple, pour stocker des actions spécifiques)
+  },
+});
+
+const Notification = mongoose.model('Notification', notificationSchema);
+
 // Export the models
 module.exports = {
   User,
+  Notification,
   Medicament,
   Prescription,
   Questionnaire,

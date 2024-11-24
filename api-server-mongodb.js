@@ -6,7 +6,7 @@ const webPush = require('web-push');  // Importer la bibliothèque WebPush
 const { auth } = require('express-oauth2-jwt-bearer');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const authConfig = require('./auth_config.json');
-
+ 
 const app = express();
 const uri = "mongodb+srv://sullivansextius:T1vcZx08zLzE0pVr@cluster0.hlc6i.mongodb.net/guardian-project?retryWrites=true&w=majority";
 
@@ -18,11 +18,6 @@ const client = new MongoClient(uri, {
   }
 });
 
-webPush.setVapidDetails(
-  'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
-  'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
-  '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
-);
 
 let db;
 
@@ -350,8 +345,11 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
   });
 
 
+
+
   app.post('/api/subscription', checkJwt, async (req, res) => {
     try {
+      
       // Extraire les données de la requête
       const  webpushtoken  = JSON.stringify(req.body);  // Le token WebPush
       const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
@@ -367,36 +365,90 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
         userId: user._id, // Utiliser l'_id de l'utilisateur trouvé
         webpushtoken: webpushtoken,  // Le token WebPush reçu
       });
-  
-      // Créer le payload de la notification
-      const notificationPayload = {
-        title: "New notification !",
-        body: "Vous avez un nouveau message.",
-        icon: "/images/icon.png", // Icône de la notification (si vous en avez)
-        url: "https://votre-site.com/nouvelle-notification", // L'URL que l'utilisateur doit visiter lorsqu'il clique sur la notification
-      };
-  
-      // Configurer l'option de notification
-      const payload = JSON.stringify(notificationPayload);
-  
-      // Envoi de la notification WebPush
-      await webPush.sendNotification(webpushtoken, payload)
-        .then(() => {
-          console.log('Notification sent successfully');
-        })
-        .catch(error => {
-          console.error('Error sending notification:', error);
-        });
-  
-      // Répondre avec un message de succès
-      res.status(201).json({
-        message: "WebPush token created and notification sent successfully",
-      });
-    } catch (error) {
-      console.error("Error creating webpushtoken or sending notification:", error);
-      res.status(500).json({ message: 'Error creating webpushtoken or sending notification' });
-    }
-  });
+
+      webPush.setVapidDetails(
+        'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
+        'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
+        '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
+      );
+    
+      //Angular format for webppush
+      const payload = {
+        notification: {
+            title: 'Ma notification d\'exemple',
+            body: 'Voici le corps de ma notification',
+            icon: 'assets/icons/icon-384x384.png',
+            actions: [
+                { action: 'bar', title: 'Action custom' },
+                { action: 'baz', title: 'Une autre action' },
+            ],
+            data: {
+                onActionClick: {
+                    default: { operation: 'openWindow',url: "http://localhost:4200/notifications" },
+                    bar: {
+                        operation: 'focusLastFocusedOrOpen',
+                        url: '/signin',
+                    },
+                    baz: {
+                        operation: 'navigateLastFocusedOrOpen',
+                        url: '/signin',
+                    },
+                },
+            },
+        },
+    };
+    webPush.sendNotification(req.body, JSON.stringify(payload));
+    // Répondre avec un message de succès
+    res.status(200).json({
+      message: "WebPush token created and notification sent successfully",
+    });
+  } catch (error) {
+    console.error("Error creating webpushtoken or sending notification:", error);
+    res.status(500).json({ message: 'Error creating webpushtoken or sending notification' });
+  }
+});
+
+
+
+
+app.post('/api/notify', checkJwt, async (req, res) => {
+  try {
+    const { userId, title, body, icon, badge, url, data, pushSubscription } = req.body;
+
+    // Enregistrer la notification dans la base de données
+    const notification = new Notification({
+      userId,
+      title,
+      body,
+      icon,
+      badge,
+      url,
+      data,
+    });
+
+    await notification.save(); // Sauvegarder la notification dans la base de données
+
+    // Créer le payload pour la notification Push
+    const payload = JSON.stringify({
+      notification: {
+        title,
+        body,
+        icon,
+        badge,
+        url,
+        data,
+      },
+    });
+
+    res.status(200).json({
+      message: 'Notification envoyée et enregistrée avec succès',
+      notificationId: notification._id,
+    });
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi ou de l\'enregistrement de la notification:', error);
+    res.status(500).json({ message: 'Erreur lors de l\'envoi ou de l\'enregistrement de la notification' });
+  }
+});
 
 
 // Start server
