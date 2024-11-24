@@ -8,7 +8,10 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
   constructor(private http: HttpClient) {}
-
+  sendNotification(notifications:any) {
+    console.log(notifications,"API")
+    return this.http.post<any>(`${config.apiUri}/api/notify`, notifications);
+  }
   // POST request for subscription
   postSubscription(subscription: any): Observable<any> {
     const url = `${config.apiUri}/api/subscription`; 

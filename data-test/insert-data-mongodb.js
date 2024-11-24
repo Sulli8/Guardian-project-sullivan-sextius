@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-const { User, Medicament, Prescription, Questionnaire, Question, Response, QuestionnaireQuestion, QuestionResponse } = require('../models-mongodb/models');
+const { User, Medicament, Prescription, Questionnaire, Question, Response, QuestionnaireQuestion, QuestionResponse, Notification } = require('../models-mongodb/models');
 
 // Connexion à MongoDB
 const uri = "mongodb+srv://sullivansextius:T1vcZx08zLzE0pVr@cluster0.hlc6i.mongodb.net/guardian-project?retryWrites=true&w=majority";
@@ -17,6 +17,7 @@ async function insertData() {
     await Questionnaire.deleteMany({});
     await Question.deleteMany({});
     await Response.deleteMany({});
+    await Notification.deleteMany({});
     await QuestionnaireQuestion.deleteMany({});
     await QuestionResponse.deleteMany({});
 
@@ -115,11 +116,43 @@ async function insertData() {
       { questionId: questions[2]._id, responseId: responses[2]._id }
     ]);
     console.log('Réponses associées aux questions avec succès');
+
+      // Étape 4: Insérer des notifications
+      const notifications = await Notification.insertMany([
+        {
+          userId: users[0]._id,
+          title: 'Nouvelle prescription',
+          body: 'Vous avez une nouvelle prescription pour le Paracetamol.',
+          status: 'unread',
+          url: 'https://votre-site.com/prescription/1',
+        },
+        {
+          userId: users[1]._id,
+          title: 'Nouvelle prescription',
+          body: 'Vous avez une nouvelle prescription pour l\'Ibuprofen.',
+          status: 'unread',
+          url: 'https://votre-site.com/prescription/2',
+        },
+        {
+          userId: users[2]._id,
+          title: 'Nouvelle prescription',
+          body: 'Vous avez une nouvelle prescription pour l\'Aspirin.',
+          status: 'unread',
+          url: 'https://votre-site.com/prescription/3',
+        }
+      ]);
+      console.log('Notifications insérées avec succès');
+
+      
   } catch (error) {
     console.error('Erreur lors de l\'insertion des données:', error);
   } finally {
     mongoose.connection.close(); // Fermer la connexion
   }
+
+
+  
+
 }
 
 insertData();

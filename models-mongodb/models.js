@@ -73,9 +73,6 @@ const webPushTokenSchema = new mongoose.Schema({
 });
 const WebPushToken = mongoose.model('WebPushTokens', webPushTokenSchema);  // Collection name in plural form
 
-
-const mongoose = require('mongoose');
-
 const notificationSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,

@@ -375,8 +375,8 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
       //Angular format for webppush
       const payload = {
         notification: {
-            title: 'Ma notification d\'exemple',
-            body: 'Voici le corps de ma notification',
+            title: 'Guardian Project - Notification',
+            body: 'Souscription aux notifications activée',
             icon: 'assets/icons/icon-384x384.png',
             actions: [
                 { action: 'bar', title: 'Action custom' },
@@ -400,6 +400,7 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
     webPush.sendNotification(req.body, JSON.stringify(payload));
     // Répondre avec un message de succès
     res.status(200).json({
+      payload,
       message: "WebPush token created and notification sent successfully",
     });
   } catch (error) {
@@ -413,36 +414,32 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
 
 app.post('/api/notify', checkJwt, async (req, res) => {
   try {
-    const { userId, title, body, icon, badge, url, data, pushSubscription } = req.body;
+    const notification_data = req.body;
+    console.log("API",notification_data)
+    const tokenFromJwt = req.auth.payload.sub;
+  
+    // Vérifier si un utilisateur avec ce token existe dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-    // Enregistrer la notification dans la base de données
-    const notification = new Notification({
-      userId,
-      title,
-      body,
-      icon,
-      badge,
-      url,
-      data,
+
+    // Créer la prescription dans la collection "prescriptions"
+    const notification_table = await db.collection('notifications').insertOne({
+      userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
+      title: notification_data.notification.title,
+      body: notification_data.notification.body,
+      status:"unread",
+      icon:"/default-icon.png",
+      badge:"/badge-icon.png",
+      url:"https://votre-site.com/prescription/1"
     });
-
-    await notification.save(); // Sauvegarder la notification dans la base de données
-
-    // Créer le payload pour la notification Push
-    const payload = JSON.stringify({
-      notification: {
-        title,
-        body,
-        icon,
-        badge,
-        url,
-        data,
-      },
-    });
+  
 
     res.status(200).json({
       message: 'Notification envoyée et enregistrée avec succès',
-      notificationId: notification._id,
+      notificationId: notification_table._id,
     });
   } catch (error) {
     console.error('Erreur lors de l\'envoi ou de l\'enregistrement de la notification:', error);

@@ -17,6 +17,7 @@ export class NotificationsComponent {
   sub:any;
   PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
   PRIVATE_VAPID_KEY_OF_SERVER = ''
+  notification_data:any
   constructor(readonly swPush: SwPush,private api:ApiService) {
     if (Notification.permission === 'granted') {
       console.log('notif granted');
@@ -87,8 +88,13 @@ export class NotificationsComponent {
       console.log('sub',sub);
       this.sub = sub;
       this.api.postSubscription(sub).subscribe(res=>{
-        console.log('res',res);
+
+        this.api.sendNotification(res.payload).subscribe(res => {
+          console.log(res)
+        })
+
       });
+
       
     } catch (err) {
       console.error('Could not subscribe due to:', err);
