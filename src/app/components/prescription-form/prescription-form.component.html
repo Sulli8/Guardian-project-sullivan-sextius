@@ -46,6 +46,20 @@
           Le dosage est requis.
         </div>
       </div>
+
+      <div class="form-group">
+        <label for="dosage">Rythme prescription</label>
+        <input
+          id="rythme"
+          type="text"
+          class="form-control"
+          formControlName="rythme"
+          placeholder="Entrez le rythme de la prescription"
+        />
+        <div *ngIf="prescriptionForm.get('rythme')?.invalid && prescriptionForm.get('rythme')?.touched" class="text-danger">
+          Le rythme est requis.
+        </div>
+      </div>
   
       <!-- Bouton de soumission -->
       <button type="submit" class="input-submit btn btn-primary" [disabled]="prescriptionForm.invalid">

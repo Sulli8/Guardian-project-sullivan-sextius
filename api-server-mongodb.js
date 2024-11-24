@@ -124,8 +124,7 @@ app.delete('/api/users/:id', async (req, res) => {
 app.post('/api/prescriptions', checkJwt, async (req, res) => {
     try {
       // Extraire les données de la requête
-      const { medicationId, quantity, dosage } = req.body;
-  console.log(medicationId, quantity, dosage)
+      const { medicationId, quantity, dosage, rythme } = req.body;
       // Récupérer le token du payload JWT
       const tokenFromJwt = req.auth.payload.sub;
   
@@ -136,7 +135,7 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
       }
   
       // Vérification de la présence des informations nécessaires
-      if (!medicationId || !quantity || !dosage) {
+      if (!medicationId || !quantity || !dosage || !rythme) {
         return res.status(400).json({ message: 'All fields are required: medicationId, quantity, dosage.' });
       }
   
@@ -146,6 +145,7 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
         medicationId,
         quantity,
         dosage,
+        rythme
       });
   
       // Répondre avec un message de succès
@@ -433,7 +433,7 @@ app.post('/api/notify', checkJwt, async (req, res) => {
       status:"unread",
       icon:"/default-icon.png",
       badge:"/badge-icon.png",
-      url:"https://votre-site.com/prescription/1"
+      url:`${authConfig.appUri}`
     });
   
 

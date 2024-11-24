@@ -19,6 +19,7 @@ export class PrescriptionFormComponent implements OnInit {
       medicationId: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]],
       dosage: ['', Validators.required],
+      rythme: ['', Validators.required],
     });
   }
 
@@ -40,6 +41,7 @@ export class PrescriptionFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.prescriptionForm)
     if (this.prescriptionForm.valid) {
       const formData = this.prescriptionForm.value;
       console.log(formData);
@@ -54,6 +56,7 @@ export class PrescriptionFormComponent implements OnInit {
         medicationName: selectedMedication?.name || 'Médicament inconnu',
         quantity: formData.quantity,
         dosage: formData.dosage,
+        rythme: formData.rythme
       };
 
       this.apiService.postPrescriptions(prescriptionData).subscribe({

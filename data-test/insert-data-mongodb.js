@@ -59,18 +59,21 @@ async function insertData() {
     const prescriptions = await Prescription.insertMany([
       {
         quantity: 30,
+        rythme: 30,
         dosage: '500 mg',
         userId: users[0]._id,    // Associe à l'utilisateur Sullivan
         medicamentId: medicaments[0]._id  // Associe au Paracetamol
       },
       {
         quantity: 20,
+        rythme:30,
         dosage: '200 mg',
         userId: users[1]._id,    // Associe à l'utilisateur Jane
         medicamentId: medicaments[1]._id  // Associe à l'Ibuprofen
       },
       {
         quantity: 25,
+        rythme:30,
         dosage: '300 mg',
         userId: users[2]._id,    // Associe à l'utilisateur John
         medicamentId: medicaments[2]._id  // Associe à l'Aspirin
@@ -143,7 +146,7 @@ async function insertData() {
       ]);
       console.log('Notifications insérées avec succès');
 
-      
+
   } catch (error) {
     console.error('Erreur lors de l\'insertion des données:', error);
   } finally {

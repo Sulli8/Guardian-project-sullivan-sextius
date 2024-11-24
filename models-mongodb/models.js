@@ -21,6 +21,7 @@ const Medicament = mongoose.model('Medicaments', medicamentSchema);  // Collecti
 // Schema for Prescriptions
 const prescriptionSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
+  rythme: { type: Number, required: true },
   dosage: { type: String, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },  // Reference to "Users"
   medicamentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicaments', required: true }  // Reference to "Medicaments"
