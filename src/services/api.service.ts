@@ -2,15 +2,38 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import config from '../../auth_config.json';
 import { Observable } from 'rxjs';
+import { Question } from 'src/models/question';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  constructor(private router: Router,private http: HttpClient) {}
+
+  handleRedirection(valeur: boolean): void {
+    console.log(valeur)
+    if (valeur) {
+      // Si 'valeur' est true, redirigez vers la page d'accueil
+      this.router.navigate(['/home-page']);
+    } else {
+      // Si 'valeur' est false, redirigez vers la page du questionnaire
+      this.router.navigate(['/questionnaire']);
+    }
+  }
+
+
   sendNotification(notifications:any) {
     console.log(notifications,"API")
     return this.http.post<any>(`${config.apiUri}/api/notify`, notifications);
+  }
+
+  submitResponses(responses: any): Observable<any> {
+    return this.http.post(`${config.apiUri}/api/responses`, responses);
+  }
+
+  checkIfUserHasAnswered(): Observable<any> {
+    return this.http.get(`${config.apiUri}/api/check-answers`);
   }
   // POST request for subscription
   postSubscription(subscription: any,relance:boolean): Observable<any> {
@@ -21,6 +44,11 @@ export class ApiService {
     const url = `${config.apiUri}/api/subscription`; 
     console.log("SOUSCRIPTION : ", subscription);
     return this.http.post<any>(url, subscription);
+  }
+  // Récupérer toutes les questions depuis l'API
+  getQuestions(): Observable<Question[]> {
+    const url = `${config.apiUri}/api/questions`
+    return this.http.get<Question[]>(url);
   }
 
   // GET request for ping

@@ -14,12 +14,9 @@ async function insertData() {
     await User.deleteMany({});
     await Medicament.deleteMany({});
     await Prescription.deleteMany({});
-    await Questionnaire.deleteMany({});
     await Question.deleteMany({});
     await Response.deleteMany({});
     await Notification.deleteMany({});
-    await QuestionnaireQuestion.deleteMany({});
-    await QuestionResponse.deleteMany({});
 
     // Étape 1: Insérer des utilisateurs avec un token
     const users = await User.insertMany([
@@ -81,44 +78,42 @@ async function insertData() {
     ]);
     console.log('Prescriptions insérées avec succès');
 
-    // Étape 4: Insérer des questionnaires
-    const questionnaires = await Questionnaire.insertMany([
-      { title: 'Health Questionnaire', description: 'A general health questionnaire.' },
-      { title: 'Medication Feedback', description: 'A questionnaire for feedback on medication.' }
-    ]);
-    console.log('Questionnaires insérés avec succès');
 
-    // Étape 5: Insérer des questions
-    const questions = await Question.insertMany([
-      { questionText: 'Do you have any allergies?', questionType: 'boolean' },
-      { questionText: 'How often do you take your medication?', questionType: 'text' },
-      { questionText: 'Which medication are you currently taking?', questionType: 'multiple_choice', responses: [] }
+  
+    const insertedQuestions = await Question.insertMany( [
+      { step: 1, text: 'Quel est votre âge ?', type: 'number' },
+      { step: 1, text: 'Êtes-vous fumeur ? (oui/non)', type: 'boolean' },
+      { step: 1, text: 'Consommez-vous de l\'alcool régulièrement ?', type: 'boolean' },
+      { step: 1, text: 'Faites-vous de l\'exercice physique régulièrement ?', type: 'boolean' },
+      { step: 1, text: 'Avez-vous des allergies connues ? (oui/non)', type: 'boolean' },
+      { step: 2, text: 'Avez-vous des antécédents médicaux familiaux ? (oui/non)', type: 'boolean' },
+      { step: 2, text: 'Êtes-vous actuellement sous traitement médical ? (oui/non)', type: 'boolean' },
+      { step: 2, text: 'Avez-vous des problèmes cardiaques ?', type: 'boolean' },
+      { step: 2, text: 'Avez-vous déjà eu des problèmes respiratoires ?', type: 'boolean' },
+      { step: 3, text: 'Sur une échelle de 1 à 10, comment évaluez-vous votre niveau de stress actuel ?', type: 'rating' },
+      { step: 3, text: 'Avez-vous des douleurs chroniques ?', type: 'boolean' },
+      { step: 3, text: 'Avez-vous récemment consulté un médecin pour un problème de santé ?', type: 'boolean' },
+      { step: 3, text: 'Avez-vous des préoccupations particulières concernant votre santé ?', type: 'text' }
     ]);
     console.log('Questions insérées avec succès');
-
-    // Étape 6: Insérer des réponses pour les questions à choix multiple
+    
     const responses = await Response.insertMany([
-      { responseText: 'Paracetamol', isCorrect: false, questionId: questions[2]._id },
-      { responseText: 'Ibuprofen', isCorrect: false, questionId: questions[2]._id },
-      { responseText: 'Aspirin', isCorrect: false, questionId: questions[2]._id }
-    ]);
+      { responseText: '30', questionId: insertedQuestions[0]._id, userId: users[1]._id },
+      { responseText: 'true', questionId: insertedQuestions[1]._id, userId: users[1]._id },
+      { responseText: 'false', questionId: insertedQuestions[2]._id, userId: users[1]._id },
+      { responseText: 'true', questionId: insertedQuestions[3]._id, userId: users[1]._id },
+      { responseText: 'false', questionId: insertedQuestions[4]._id, userId: users[1]._id },
+      { responseText: 'true', questionId: insertedQuestions[5]._id, userId: users[1]._id },
+      { responseText: 'false', questionId: insertedQuestions[6]._id, userId: users[1]._id },
+      { responseText: 'true', questionId: insertedQuestions[7]._id, userId: users[1]._id },
+      { responseText: 'false', questionId: insertedQuestions[8]._id, userId: users[1]._id },
+      { responseText: '8', questionId: insertedQuestions[9]._id, userId: users[1]._id },
+      { responseText: 'true', questionId: insertedQuestions[10]._id, userId: users[1]._id },
+      { responseText: 'false', questionId: insertedQuestions[11]._id, userId: users[1]._id },
+      { responseText: 'Non, je suis en bonne santé.', questionId: insertedQuestions[12]._id, userId: users[1]._id }
+    ]);   
     console.log('Réponses insérées avec succès');
 
-    // Étape 7: Associer des questions aux questionnaires
-    await QuestionnaireQuestion.insertMany([
-      { questionnaireId: questionnaires[0]._id, questionId: questions[0]._id },
-      { questionnaireId: questionnaires[0]._id, questionId: questions[1]._id },
-      { questionnaireId: questionnaires[1]._id, questionId: questions[2]._id }
-    ]);
-    console.log('Questions associées aux questionnaires avec succès');
-
-    // Étape 8: Associer des réponses aux questions
-    await QuestionResponse.insertMany([
-      { questionId: questions[2]._id, responseId: responses[0]._id },
-      { questionId: questions[2]._id, responseId: responses[1]._id },
-      { questionId: questions[2]._id, responseId: responses[2]._id }
-    ]);
-    console.log('Réponses associées aux questions avec succès');
 
       // Étape 4: Insérer des notifications
       const notifications = await Notification.insertMany([

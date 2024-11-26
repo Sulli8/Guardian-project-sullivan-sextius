@@ -28,43 +28,42 @@ const prescriptionSchema = new mongoose.Schema({
 });
 const Prescription = mongoose.model('Prescriptions', prescriptionSchema);  // Collection name in plural form
 
-// Schema for Questionnaires
-const questionnaireSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String },
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Questions' }]  // Reference to "Questions"
-});
-const Questionnaire = mongoose.model('Questionnaires', questionnaireSchema);  // Collection name in plural form
-
-// Schema for Questions
 const questionSchema = new mongoose.Schema({
-  questionText: { type: String, required: true },
-  questionType: { type: String, required: true, enum: ['text', 'multiple_choice', 'boolean'] },
-  responses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Responses' }]  // Reference to "Responses"
+  step: Number,
+  text: String,
+  type: String
 });
 const Question = mongoose.model('Questions', questionSchema);  // Collection name in plural form
 
-// Schema for Responses
 const responseSchema = new mongoose.Schema({
-  responseText: { type: String, required: true },
-  isCorrect: { type: Boolean, default: false },
-  questionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Questions', required: true }  // Reference to "Questions"
+  // Le texte ou la réponse donnée par l'utilisateur
+  responseText: {
+    type: mongoose.Schema.Types.Mixed,  // Type mixte pour accepter différentes formes (texte, booléen, etc.)
+    required: true
+  },
+  
+  // ID de la question à laquelle cette réponse appartient
+  questionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question',  // Référence au modèle 'Question'
+    required: true
+  },
+  
+  // ID de l'utilisateur ayant répondu
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',  // Référence au modèle 'User'
+    required: true
+  },
+  
+  // Date et heure de la réponse
+  createdAt: {
+    type: Date,
+    default: Date.now  // Par défaut, la date est l'heure actuelle
+  }
 });
-const Response = mongoose.model('Responses', responseSchema);  // Collection name in plural form
+const Response = mongoose.model('Response', responseSchema);  // Collection name in plural form
 
-// Schema for Questionnaire-Question relationship (many-to-many)
-const questionnaireQuestionSchema = new mongoose.Schema({
-  questionnaireId: { type: mongoose.Schema.Types.ObjectId, ref: 'Questionnaires', required: true },  // Reference to "Questionnaires"
-  questionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Questions', required: true }  // Reference to "Questions"
-});
-const QuestionnaireQuestion = mongoose.model('QuestionnaireQuestions', questionnaireQuestionSchema);  // Collection name in plural form
-
-// Schema for Question-Response relationship (many-to-many)
-const questionResponseSchema = new mongoose.Schema({
-  questionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Questions', required: true },  // Reference to "Questions"
-  responseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Responses', required: true }  // Reference to "Responses"
-});
-const QuestionResponse = mongoose.model('QuestionResponse', questionResponseSchema);  // Collection name in plural form
 
 // Schema for Web Push Notification Tokens
 const webPushTokenSchema = new mongoose.Schema({
@@ -169,10 +168,7 @@ module.exports = {
   Notification,
   Medicament,
   Prescription,
-  Questionnaire,
   Question,
   Response,
-  QuestionnaireQuestion,
-  QuestionResponse,
   WebPushToken
 };

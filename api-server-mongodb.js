@@ -61,7 +61,11 @@ async function connectToDatabase() {
   }
 }
 connectToDatabase();
-
+//Questions
+app.get('/api/questions', async (req, res) => {
+  const questions = await db.collection('questions').find().toArray();
+  res.status(200).json({ message: "User created successfully", questions: questions });
+});
 // Users API
 app.post('/api/create_user', async (req, res) => {
   try {
@@ -181,7 +185,64 @@ app.get('/api/list-prescriptions', checkJwt, async (req, res) => {
       res.status(500).json({ message: 'Error fetching prescriptions' });
     }
   });
-  
+// Route pour soumettre les réponses
+app.post('/api/responses', checkJwt,async (req, res) => {
+  try {
+    // Récupérer l'ID utilisateur du token JWT
+    const tokenFromJwt = req.auth.payload.sub;  // On suppose que le middleware de vérification de JWT a déjà rempli req.auth avec le payload du token
+
+    // Vérifier si l'utilisateur existe dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+
+    // Si l'utilisateur existe, on passe à l'enregistrement des réponses
+    const responses = req.body;  // Récupère les réponses envoyées par le frontend
+
+    const responseDocs = responses.map((response) => ({
+      userId: user._id,  // On associe la réponse à un utilisateur spécifique
+      questionId: response.questionId,
+      responseText: response.response.toString()
+    }));
+
+    // Insère toutes les réponses dans la collection 'responses'
+    const result = await db.collection('responses').insertMany(responseDocs);
+
+    res.status(200).json({
+      message: 'Réponses enregistrées avec succès',
+      insertedCount: result.insertedCount,  // Nombre de réponses insérées
+    });
+  } catch (error) {
+    console.error('Erreur lors de l\'insertion des réponses:', error);
+    res.status(500).json({ message: 'Erreur lors de l\'enregistrement des réponses' });
+  }
+});
+
+
+app.get('/api/check-answers', checkJwt, async (req, res) => {
+  try {
+    const tokenFromJwt = req.auth.payload.sub;  // Récupérez l'ID de l'utilisateur depuis le token
+
+    const responsesCollection = db.collection('responses');
+
+    // Cherchez les réponses de cet utilisateur dans la collection
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    const userResponses = await responsesCollection.findOne({ userId: user._id });
+
+    if (userResponses) {
+      // L'utilisateur a déjà répondu
+      return res.status(200).json({ message: 'Vous avez déjà répondu au questionnaire.' ,valeur:true});
+    } else {
+      // L'utilisateur n'a pas encore répondu
+      return res.status(200).json({ message: 'Vous n\'avez pas encore répondu au questionnaire.', valeur :false });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la vérification des réponses:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
 
   app.delete('/api/prescriptions/:id', checkJwt, async (req, res) => {
     try {
@@ -268,39 +329,6 @@ app.post('/api/questions', checkJwt, async (req, res) => {
   } catch (error) {
     console.error("Error creating question:", error);
     res.status(500).json({ message: 'Error creating question' });
-  }
-});
-
-// Réponse à un questionnaire
-app.post('/api/responses', checkJwt, async (req, res) => {
-  try {
-    const { questionnaireId, answers } = req.body;
-    const userId = req.auth.payload.sub;
-
-    if (!questionnaireId || !answers || answers.length === 0) {
-      return res.status(400).json({ message: 'Questionnaire ID and answers are required.' });
-    }
-
-    // Vérifier que toutes les questions du questionnaire sont répondues
-    const questionnaire = await db.collection('questionnaires').findOne({ _id: new ObjectId(questionnaireId) });
-    if (!questionnaire) {
-      return res.status(404).json({ message: 'Questionnaire not found.' });
-    }
-
-    if (questionnaire.questions.length !== answers.length) {
-      return res.status(400).json({ message: 'Please answer all questions.' });
-    }
-
-    const response = await db.collection('responses').insertOne({
-      userId,
-      questionnaireId,
-      answers,
-    });
-
-    res.status(201).json({ message: 'Response recorded successfully', responseId: response.insertedId });
-  } catch (error) {
-    console.error("Error submitting response:", error);
-    res.status(500).json({ message: 'Error submitting response' });
   }
 });
 

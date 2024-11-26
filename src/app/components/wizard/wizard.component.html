@@ -1,0 +1,67 @@
+<div class="wizard">
+    <h2>{{ title }}</h2>
+  
+    <div class="steps">
+      <div
+        *ngFor="let step of steps; let i = index"
+        [class.active]="i === currentStep"
+        (click)="goToStep(i)"
+      >
+        Étape {{ step.step }}
+      </div>
+    </div>
+
+    <div class="step-content">
+        <div *ngFor="let question of steps[currentStep]?.questions">
+          <label [for]="'question-' + question._id">{{ question.text }}</label>
+      
+          <!-- Pour les champs de type 'text' -->
+          <input
+            *ngIf="question.type === 'text'"
+            [(ngModel)]="responses[question._id]"
+            [id]="'question-' + question._id"
+            type="text"
+          />
+      
+          <!-- Pour les boutons radio (type 'boolean') -->
+          <div *ngIf="question.type === 'boolean'">
+            <label>
+              <input
+                [(ngModel)]="responses[question._id]"
+                [name]="'question-' + question._id"
+                type="radio"
+                [value]="true"
+              />
+              Oui
+            </label>
+            <label>
+              <input
+                [(ngModel)]="responses[question._id]"
+                [name]="'question-' + question._id"
+                type="radio"
+                [value]="false"
+              />
+              Non
+            </label>
+          </div>
+      
+          <!-- Pour les champs de type 'rating' -->
+          <input
+            *ngIf="question.type === 'rating'"
+            [(ngModel)]="responses[question._id]"
+            [id]="'question-' + question._id"
+            type="number"
+            min="1"
+            max="5"
+          />
+        </div>
+      </div>
+      
+  
+    <div class="navigation">
+      <button (click)="previousStep()" [disabled]="currentStep === 0">Précédent</button>
+      <button (click)="nextStep()" [disabled]="currentStep === steps.length - 1">Suivant</button>
+      <button *ngIf="currentStep === steps.length - 1" (click)="submitWizard()">Soumettre</button>
+    </div>
+  </div>
+  
