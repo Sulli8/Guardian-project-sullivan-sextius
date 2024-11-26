@@ -15,6 +15,7 @@ export class NotificationsComponent {
   displayMessage = false;
   NotifsAllowed = false;
   sub:any;
+  private relanceIntervalId: any = null;
   PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
   PRIVATE_VAPID_KEY_OF_SERVER = ''
   notification_data:any
@@ -79,6 +80,63 @@ export class NotificationsComponent {
     console.log('Subscription process complete.');
   }
   */
+  public stopRelance() {
+    if (this.relanceIntervalId !== null) {
+      clearInterval(this.relanceIntervalId);
+      this.relanceIntervalId = null; // Réinitialiser pour éviter des appels multiples
+      console.log('Relance arrêtée avec succès.');
+    } else {
+      console.log('Aucune relance active à arrêter.');
+    }
+  }
+  
+ public async startRelance() {
+  try {
+    // Démarrer un intervalle pour exécuter les opérations périodiques
+    this.relanceIntervalId = setInterval(async () => {
+      try {
+        // Demander la souscription Push
+        const sub = await this.swPush.requestSubscription({
+          serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
+        });
+        console.log('Souscription réussie:', sub);
+
+        // Enregistrer la souscription côté serveur
+        this.sub = sub;
+        this.api.postSubscription(sub, false).subscribe((res) => {
+          if (res) {
+            console.log('Souscription enregistrée côté serveur:', res);
+
+            // Préparer le payload de notification
+            const payload = {
+              title: 'Relance automatique',
+              body: 'Ceci est un rappel envoyé toutes les 10 secondes.',
+              icon: '/assets/icons/push-icon.png',
+              data: { url: 'https://votre-application.com' },
+            };
+
+            // Envoyer la notification
+            this.api.sendNotification({ subscription: res.payload, payload }).subscribe(
+              (response) => {
+                console.log('Notification envoyée:', response);
+              },
+              (error) => {
+                console.error('Erreur lors de l\'envoi de la notification:', error);
+              }
+            );
+          }
+        });
+      } catch (err) {
+        console.error('Erreur dans le processus de relance:', err);
+        // Arrêter l'intervalle en cas d'erreur critique
+        this.stopRelance();
+      }
+    }, 10 * 1000); // Toutes les 10 secondes
+  } catch (err) {
+    console.error('Impossible de démarrer les relances :', err);
+  }
+}
+
 
   public async subscribeToPush() {
     try {
@@ -87,7 +145,7 @@ export class NotificationsComponent {
       });
       console.log('sub',sub);
       this.sub = sub;
-      this.api.postSubscription(sub).subscribe(res=>{
+      this.api.postSubscription(sub,false).subscribe(res=>{
 
         this.api.sendNotification(res.payload).subscribe(res => {
           console.log(res)

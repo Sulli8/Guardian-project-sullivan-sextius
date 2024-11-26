@@ -5,7 +5,8 @@
 <div class="buttons-container">
   <button [disabled]="!NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">Souscrire aux notifications</button>
   <div *ngIf="NotifsAllowed" class="buttons-container-child">
-    <button  class="button is-primary">Autoriser les relances</button>
+    <button  class="button is-primary" (click)="startRelance()">Autoriser les relances</button>
+    <button  class="button is-primary" (click)="stopRelance()">Arrêter les relances</button>
     <button  class="button is-primary">Supprimer mes données</button>
   </div>
 </div>

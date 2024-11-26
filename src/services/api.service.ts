@@ -13,7 +13,11 @@ export class ApiService {
     return this.http.post<any>(`${config.apiUri}/api/notify`, notifications);
   }
   // POST request for subscription
-  postSubscription(subscription: any): Observable<any> {
+  postSubscription(subscription: any,relance:boolean): Observable<any> {
+    const object = {
+      webpushtoken:subscription,
+      relances: relance
+    }
     const url = `${config.apiUri}/api/subscription`; 
     console.log("SOUSCRIPTION : ", subscription);
     return this.http.post<any>(url, subscription);
@@ -43,9 +47,18 @@ export class ApiService {
     return this.http.get<any>(url);
   }
 
+    // GET request for list of prescriptions
+    postRelances(subscription: any): Observable<any> {
+      const url = `${config.apiUri}/api/start-relance`; // URL de l'API pour récupérer la liste des prescriptions
+      return this.http.post<any>(url,subscription);
+    }
+
     // DELETE request for deleting a prescription
     deletePrescription(id: number): Observable<any> {
       const url = `${config.apiUri}/api/prescriptions/${id}`; // Assurez-vous que l'API accepte les requêtes DELETE sur ce point de terminaison
       return this.http.delete<any>(url);
     }
+
+
+
 }

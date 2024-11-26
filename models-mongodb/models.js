@@ -98,7 +98,7 @@ const notificationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['unread', 'read'],
+    enum: ['unread', 'read','taken'],
     default: 'unread',
   },
   sentAt: {
@@ -114,9 +114,58 @@ const notificationSchema = new mongoose.Schema({
 
 const Notification = mongoose.model('Notification', notificationSchema);
 
+
+// Définir le schéma pour les relances
+const relanceSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  notificationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Notification',
+    required: true,
+  },
+  interval: {
+    type: Number,
+    required: true, // Intervalle en minutes entre les relances
+  },
+  nextSendTime: {
+    type: Date,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['active', 'stopped', 'completed'],
+    default: 'active',
+  },
+  relancesCount: {
+    type: Number,
+    default: 0, // Nombre de relances déjà effectuées
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Middleware pour mettre à jour le champ updatedAt à chaque modification
+relanceSchema.pre('save', function (next) {
+  this.updatedAt = Date.now();
+  next();
+});
+const Relances = mongoose.model('Relances', relanceSchema);
+
+
 // Export the models
 module.exports = {
   User,
+  Relances,
   Notification,
   Medicament,
   Prescription,

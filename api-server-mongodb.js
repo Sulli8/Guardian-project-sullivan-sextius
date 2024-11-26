@@ -351,28 +351,44 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
     try {
       
       // Extraire les données de la requête
-      const  webpushtoken  = JSON.stringify(req.body);  // Le token WebPush
+      const  webpushtoken  = JSON.stringify(req.body.webpushtoken);  // Le token WebPush
       const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
-      console.log(req.body)
-      // Vérifier si un utilisateur avec ce token existe dans la base de données
-      const user = await db.collection('users').findOne({ token: tokenFromJwt });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      
-      // Créer un abonnement (webpushtoken) pour cet utilisateur
-      const subscription = await db.collection('webpushtokens').insertOne({
-        userId: user._id, // Utiliser l'_id de l'utilisateur trouvé
-        webpushtoken: webpushtoken,  // Le token WebPush reçu
-      });
-
       webPush.setVapidDetails(
         'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
         'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
         '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
       );
-    
-      //Angular format for webppush
+      // Vérifier si un utilisateur avec ce token existe dans la base de données
+      const user = await db.collection('users').findOne({ token: tokenFromJwt });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      const user_webpushtoken = await db.collection('webpushtokens').findOne({ userId: user._id, });
+      if (user_webpushtoken && req.body.relance) {
+          const existingRelance = await db.collection('relances').findOne({ userId: user._id, status: 'active' });
+          if (existingRelance) {
+            console.log(existingRelance)
+            return res.status(400).json({ message: 'Relance already active' });
+          } else {
+             // Enregistrer une nouvelle relance
+            const newRelance = await db.collection('relances').insertOne({
+              userId: user._id, // L'identifiant de l'utilisateur lié à cette relance
+              notificationId: notifications._id, // L'identifiant de la notification liée
+              interval: 30, // Intervalle en minutes (par exemple : 30 minutes)
+              nextSendTime: new Date(Date.now() + 30 * 60 * 1000), // Exemple : prochaine relance dans 30 minutes
+              status: 'active', // Correspond au statut "actif" comme chaîne de caractères
+              relancesCount: 0, // Initialement, aucune relance n'a été effectuée
+              createdAt: new Date(), // Date de création
+              updatedAt: new Date(), // Date de la dernière mise à jour (même valeur qu'au départ)
+            });
+          }
+      }
+        else {
+          const subscription = await db.collection('webpushtokens').insertOne({
+            userId: user._id, // Utiliser l'_id de l'utilisateur trouvé
+            webpushtoken: webpushtoken,  // Le token WebPush reçu
+          });
+      }
       const payload = {
         notification: {
             title: 'Guardian Project - Notification',
@@ -409,13 +425,9 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
   }
 });
 
-
-
-
 app.post('/api/notify', checkJwt, async (req, res) => {
   try {
     const notification_data = req.body;
-    console.log("API",notification_data)
     const tokenFromJwt = req.auth.payload.sub;
   
     // Vérifier si un utilisateur avec ce token existe dans la base de données
@@ -428,15 +440,16 @@ app.post('/api/notify', checkJwt, async (req, res) => {
     // Créer la prescription dans la collection "prescriptions"
     const notification_table = await db.collection('notifications').insertOne({
       userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
-      title: notification_data.notification.title,
-      body: notification_data.notification.body,
+      title: notification_data.subscription.notification.title,
+      body: notification_data.subscription.notification.body,
       status:"unread",
       icon:"/default-icon.png",
       badge:"/badge-icon.png",
+      pris:false,
+      date: new Date(),
       url:`${authConfig.appUri}`
     });
   
-
     res.status(200).json({
       message: 'Notification envoyée et enregistrée avec succès',
       notificationId: notification_table._id,
@@ -447,6 +460,88 @@ app.post('/api/notify', checkJwt, async (req, res) => {
   }
 });
 
+app.post('/api/start-relance', checkJwt, async (req, res) => {
+  try {
+    const tokenFromJwt = req.auth.payload.sub;
+
+   const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    //console.log("TOKEN : ",user._id)
+    // Vérifiez si une relance est déjà active
+    const existingRelance = await db.collection('relances').findOne({ userId: user._id, status: 'active' });
+    if (existingRelance) {
+      console.log(existingRelance)
+      return res.status(400).json({ message: 'Relance already active' });
+    }
+    const notifications = await db.collection('notifications').findOne({ userId:user._id });
+    webPush.setVapidDetails(
+      'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
+      'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
+      '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
+    );
+
+    // Enregistrer une nouvelle relance
+    const newRelance = await db.collection('relances').insertOne({
+      userId: user._id, // L'identifiant de l'utilisateur lié à cette relance
+      notificationId: notifications._id, // L'identifiant de la notification liée
+      interval: 30, // Intervalle en minutes (par exemple : 30 minutes)
+      nextSendTime: new Date(Date.now() + 30 * 60 * 1000), // Exemple : prochaine relance dans 30 minutes
+      status: 'active', // Correspond au statut "actif" comme chaîne de caractères
+      relancesCount: 0, // Initialement, aucune relance n'a été effectuée
+      createdAt: new Date(), // Date de création
+      updatedAt: new Date(), // Date de la dernière mise à jour (même valeur qu'au départ)
+    });
+    console.log("RELANCES : ",newRelance)
+
+    const intervalId = setInterval(async () => {
+      console.log("NOTIFICATION RELANCE : ",newRelance)
+      // Vérifier si la relance est toujours active
+      const isActive = await db.collection('relances').findOne({ _id: newRelance.insertedId, status: 'active' });
+    
+      // Si la relance n'est plus active, on arrête l'intervalle
+      if (!isActive) {
+        clearInterval(intervalId); // Arrêter si la relance est annulée
+        return;
+      }
+    
+      // Récupérer les informations de l'utilisateur et de la notification
+      const user = await db.collection('users').findOne({ _id: newRelance.userId });
+      const userSubscription = await db.collection('webpushtokens').findOne({ userId: user._id });
+      const notificationPayload = {
+        notification: {
+          title: 'Rappel - Relance Active',
+          body: 'Ceci est une relance automatique.',
+          icon: '/default-icon.png',
+          data: { url: 'http://localhost:4200/notifications' }
+        }
+      };
+    
+      // Si l'utilisateur a un token de web push, envoyer la notification
+      if (userSubscription) {
+      console.log("SUBSCRIPTION : ",userSubscription.webpushtoken)
+        webPush.sendNotification(JSON.parse(userSubscription.webpushtoken), JSON.stringify(notificationPayload))
+          .then(response => {
+            console.log('Notification envoyée', response);
+          })
+          .catch(err => {
+            console.error('Erreur lors de l\'envoi de la notification', err);
+          });
+      }
+    }, 2 * 60 * 1000); // Toutes les 2 minutes
+    // Si une relance est annulée ou terminée, nettoyez l'intervalle
+    await db.collection('relances').updateOne(
+      { _id: newRelance.insertedId },
+      { $set: { status: 'completed' } }
+    );
+
+    res.status(200).json({ message: 'Relance started successfully' });
+  } catch (error) {
+    console.error('Error starting relance:', error);
+    res.status(500).json({ message: 'Error starting relance' });
+  }
+});
 
 // Start server
 const port = process.env.PORT || 3001;
