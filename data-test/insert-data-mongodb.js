@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const { User, Medicament, Prescription, Questionnaire, Question, Response, QuestionnaireQuestion, QuestionResponse, Notification } = require('../models-mongodb/models');
+const { Db } = require('mongodb');
 
 // Connexion à MongoDB
 const uri = "mongodb+srv://sullivansextius:T1vcZx08zLzE0pVr@cluster0.hlc6i.mongodb.net/guardian-project?retryWrites=true&w=majority";
@@ -52,30 +53,36 @@ async function insertData() {
     ]);
     console.log('Médicaments insérés avec succès');
 
+   
     // Étape 3: Insérer des prescriptions
     const prescriptions = await Prescription.insertMany([
       {
-        quantity: 30,
-        rythme: 30,
+        frequence: '1 fois par jour', // Exemple de fréquence
         dosage: '500 mg',
-        userId: users[0]._id,    // Associe à l'utilisateur Sullivan
-        medicamentId: medicaments[0]._id  // Associe au Paracetamol
+        userId: users[0]._id,  // Associe à l'utilisateur Sullivan
+        medicamentId: medicaments[0]._id,  // Associe au Paracetamol
+        datePrescribed: new Date(), // Date actuelle
+        timePrescribed: new Date()
       },
       {
-        quantity: 20,
-        rythme:30,
+        frequence: '2 fois par jour', // Exemple de fréquence
         dosage: '200 mg',
-        userId: users[1]._id,    // Associe à l'utilisateur Jane
-        medicamentId: medicaments[1]._id  // Associe à l'Ibuprofen
+        userId: users[1]._id,  // Associe à l'utilisateur Jane
+        medicamentId: medicaments[1]._id,  // Associe à l'Ibuprofen
+        datePrescribed: new Date(), // Date actuelle
+        timePrescribed: new Date()
       },
       {
-        quantity: 25,
-        rythme:30,
+        frequence: 'toutes les 6 heures',  // Exemple de fréquence
         dosage: '300 mg',
-        userId: users[2]._id,    // Associe à l'utilisateur John
-        medicamentId: medicaments[2]._id  // Associe à l'Aspirin
+        userId: users[2]._id,  // Associe à l'utilisateur John
+        medicamentId: medicaments[2]._id,  // Associe à l'Aspirin
+        datePrescribed: new Date(), // Date actuelle
+        timePrescribed: new Date()
       }
     ]);
+    
+    
     console.log('Prescriptions insérées avec succès');
 
 
@@ -115,30 +122,42 @@ async function insertData() {
     console.log('Réponses insérées avec succès');
 
 
-      // Étape 4: Insérer des notifications
-      const notifications = await Notification.insertMany([
-        {
-          userId: users[0]._id,
-          title: 'Nouvelle prescription',
-          body: 'Vous avez une nouvelle prescription pour le Paracetamol.',
-          status: 'unread',
-          url: 'https://votre-site.com/prescription/1',
-        },
-        {
-          userId: users[1]._id,
-          title: 'Nouvelle prescription',
-          body: 'Vous avez une nouvelle prescription pour l\'Ibuprofen.',
-          status: 'unread',
-          url: 'https://votre-site.com/prescription/2',
-        },
-        {
-          userId: users[2]._id,
-          title: 'Nouvelle prescription',
-          body: 'Vous avez une nouvelle prescription pour l\'Aspirin.',
-          status: 'unread',
-          url: 'https://votre-site.com/prescription/3',
-        }
-      ]);
+     // Étape 4: Insérer des notifications
+     const notifications = await Notification.insertMany([
+      {
+        userId: users[0]._id,
+        title: 'Nouvelle prescription',
+        body: 'Vous avez une nouvelle prescription pour le Paracetamol.',
+        status: 'unread',
+        url: 'https://votre-site.com/prescription/1',
+        prescriptionId: prescriptions[0]._id, // Ajout du prescriptionId ici
+        nbNotification: 1, // Initialisation du compteur de notifications
+        dateNotification: new Date(), // Date de la notification envoyée
+        isSubscribe: false, // Ajout du champ isSubscribe, initialisé à false
+      },
+      {
+        userId: users[1]._id,
+        title: 'Nouvelle prescription',
+        body: 'Vous avez une nouvelle prescription pour l\'Ibuprofen.',
+        status: 'unread',
+        url: 'https://votre-site.com/prescription/2',
+        prescriptionId: prescriptions[1]._id, // Ajout du prescriptionId ici
+        nbNotification: 1, // Initialisation du compteur de notifications
+        dateNotification: new Date(), // Date de la notification envoyée
+        isSubscribe: false, // Ajout du champ isSubscribe, initialisé à false
+      },
+      {
+        userId: users[2]._id,
+        title: 'Nouvelle prescription',
+        body: 'Vous avez une nouvelle prescription pour l\'Aspirin.',
+        status: 'unread',
+        url: 'https://votre-site.com/prescription/3',
+        prescriptionId: prescriptions[2]._id, // Ajout du prescriptionId ici
+        nbNotification: 1, // Initialisation du compteur de notifications
+        dateNotification: new Date(), // Date de la notification envoyée
+        isSubscribe: false, // Ajout du champ isSubscribe, initialisé à false
+      }
+    ]);
       console.log('Notifications insérées avec succès');
 
 

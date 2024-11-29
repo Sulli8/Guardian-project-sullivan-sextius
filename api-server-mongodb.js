@@ -64,7 +64,7 @@ connectToDatabase();
 //Questions
 app.get('/api/questions', async (req, res) => {
   const questions = await db.collection('questions').find().toArray();
-  res.status(200).json({ message: "User created successfully", questions: questions });
+  res.status(200).json({ message: "Get question  successfully", questions: questions });
 });
 // Users API
 app.post('/api/create_user', async (req, res) => {
@@ -126,42 +126,68 @@ app.delete('/api/users/:id', async (req, res) => {
 });
 
 app.post('/api/prescriptions', checkJwt, async (req, res) => {
-    try {
-      // Extraire les données de la requête
-      const { medicationId, quantity, dosage, rythme } = req.body;
-      // Récupérer le token du payload JWT
-      const tokenFromJwt = req.auth.payload.sub;
-  
-      // Vérifier si un utilisateur avec ce token existe dans la base de données
-      const user = await db.collection('users').findOne({ token: tokenFromJwt });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Vérification de la présence des informations nécessaires
-      if (!medicationId || !quantity || !dosage || !rythme) {
-        return res.status(400).json({ message: 'All fields are required: medicationId, quantity, dosage.' });
-      }
-  
-      // Créer la prescription dans la collection "prescriptions"
-      const prescription = await db.collection('prescriptions').insertOne({
-        userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
-        medicationId,
-        quantity,
-        dosage,
-        rythme
-      });
-  
-      // Répondre avec un message de succès
-      res.status(201).json({
-        message: "Prescription created successfully",
-        prescriptionId: prescription.insertedId,
-      });
-    } catch (error) {
-      console.error("Error creating prescription:", error);
-      res.status(500).json({ message: 'Error creating prescription' });
+  try {
+    // Extraire les données de la requête
+    const { medicationId, dosage, frequence, datePrescribed, timePrescribed } = req.body;
+    console.log(req.body);
+
+    // Récupérer le token du payload JWT
+    const tokenFromJwt = req.auth.payload.sub;
+
+    // Vérifier si un utilisateur avec ce token existe dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
-  });
+
+    // Vérification de la présence des informations nécessaires
+    if (!medicationId || !dosage || !frequence) {
+      return res.status(400).json({ message: 'Tous les champs sont requis : medicationId, dosage, frequence.' });
+    }
+
+    // Récupérer la date et l'heure actuelles
+    const currentDate = new Date();
+    const prescribedDateTime = new Date(`${datePrescribed}T${timePrescribed}:00`);
+    // Créer la prescription dans la collection "prescriptions"
+    const prescription = await db.collection('prescriptions').insertOne({
+      userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
+      medicationId,
+      dosage,
+      frequence, // Fréquence de la prescription
+      datePrescribed: prescribedDateTime, // Date actuelle de la prescription
+      timePrescribed: prescribedDateTime, // Heure actuelle de la prescription
+    });
+
+    // Vérifier si l'utilisateur a un `webpushtoken` (abonnement aux notifications)
+    const webPushToken = await db.collection('webpushtokens').findOne({ userId: user._id });
+
+    // Créer la notification avec isSubscribed en fonction de la présence du `webpushtoken`
+    const isSubscribed = webPushToken ? true : false; // Si un `webpushtoken` existe, l'utilisateur est abonné.
+    // Ensuite, insérer la notification avec la prescription ID et `isSubscribed`
+    if (prescription.insertedId) {
+        const notification = await db.collection('notifications').insertOne({
+          userId: user._id, // ID de l'utilisateur
+          title: 'Nouvelle prescription',
+          body: `Vous avez une nouvelle prescription pour ${medicationId}.`,
+          status: 'unread', // Statut par défaut
+          prescriptionId: prescription.insertedId, // Référence à la prescription spécifique
+          nbNotification: 0, // Nombre de notifications envoyées
+          dateNotification: currentDate, // Date de la notification
+          isSubscribed: isSubscribed, // `true` si l'utilisateur est abonné, `false` sinon
+        });
+    }
+
+    // Répondre avec un message de succès
+    res.status(201).json({
+      message: "Prescription créée avec succès",
+      prescriptionId: prescription.insertedId,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la création de la prescription :", error);
+    res.status(500).json({ message: 'Erreur lors de la création de la prescription' });
+  }
+});
+
   
 
 app.get('/api/list-prescriptions', checkJwt, async (req, res) => {
@@ -185,6 +211,8 @@ app.get('/api/list-prescriptions', checkJwt, async (req, res) => {
       res.status(500).json({ message: 'Error fetching prescriptions' });
     }
   });
+ 
+ 
 // Route pour soumettre les réponses
 app.post('/api/responses', checkJwt,async (req, res) => {
   try {
@@ -197,7 +225,7 @@ app.post('/api/responses', checkJwt,async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-
+  
     // Si l'utilisateur existe, on passe à l'enregistrement des réponses
     const responses = req.body;  // Récupère les réponses envoyées par le frontend
 
@@ -332,243 +360,258 @@ app.post('/api/questions', checkJwt, async (req, res) => {
   }
 });
 
+app.put('/api/unsubscribe', checkJwt, async (req, res) => {
+  try {
+    const tokenFromJwt = req.auth.payload.sub; 
 
-
-app.post('/api/prescriptions', checkJwt, async (req, res) => {
-    try {
-      // Extraire les données de la requête
-      const { medicationId, quantity, dosage } = req.body;
-  console.log(medicationId, quantity, dosage)
-      // Récupérer le token du payload JWT
-      const tokenFromJwt = req.auth.payload.sub;
-  
-      // Vérifier si un utilisateur avec ce token existe dans la base de données
-      const user = await db.collection('users').findOne({ token: tokenFromJwt });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Vérification de la présence des informations nécessaires
-      if (!medicationId || !quantity || !dosage) {
-        return res.status(400).json({ message: 'All fields are required: medicationId, quantity, dosage.' });
-      }
-  
-      // Créer la prescription dans la collection "prescriptions"
-      const prescription = await db.collection('prescriptions').insertOne({
-        userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
-        medicationId,
-        quantity,
-        dosage,
-      });
-  
-      // Répondre avec un message de succès
-      res.status(201).json({
-        message: "Prescription created successfully",
-        prescriptionId: prescription.insertedId,
-      });
-    } catch (error) {
-      console.error("Error creating prescription:", error);
-      res.status(500).json({ message: 'Error creating prescription' });
+    // Rechercher l'utilisateur dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
-  });
 
+    // Désabonner l'utilisateur dans la collection 'notifications'
+    const updateNotificationResult = await db.collection('notifications').updateMany(
+      { userId: user._id }, 
+      { $set: { isSubscribed: false } }  
+    );
 
+    // Si des notifications ont été trouvées et mises à jour, ou si l'utilisateur n'a pas de notifications
+    // (dans ce cas, on ne fait rien, mais on renvoie quand même un message de succès)
+    if (updateNotificationResult.modifiedCount === 0) {
+      console.log('Aucune notification à désabonner, l\'utilisateur peut ne pas avoir de notifications.');
+    }
 
+    // Supprimer le token WebPush de la collection 'webpushtokens'
+    const deleteWebPushTokenResult = await db.collection('webpushtokens').deleteOne({ userId: user._id });
+    
+    // Vérifier si le token WebPush a bien été supprimé
+    if (deleteWebPushTokenResult.deletedCount === 0) {
+      console.log('Aucun token WebPush trouvé pour cet utilisateur.');
+    }
 
-  app.post('/api/subscription', checkJwt, async (req, res) => {
-    try {
-      
-      // Extraire les données de la requête
-      const  webpushtoken  = JSON.stringify(req.body.webpushtoken);  // Le token WebPush
-      const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
-      webPush.setVapidDetails(
-        'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
-        'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
-        '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
-      );
-      // Vérifier si un utilisateur avec ce token existe dans la base de données
-      const user = await db.collection('users').findOne({ token: tokenFromJwt });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      const user_webpushtoken = await db.collection('webpushtokens').findOne({ userId: user._id, });
-      if (user_webpushtoken && req.body.relance) {
-          const existingRelance = await db.collection('relances').findOne({ userId: user._id, status: 'active' });
-          if (existingRelance) {
-            console.log(existingRelance)
-            return res.status(400).json({ message: 'Relance already active' });
-          } else {
-             // Enregistrer une nouvelle relance
-            const newRelance = await db.collection('relances').insertOne({
-              userId: user._id, // L'identifiant de l'utilisateur lié à cette relance
-              notificationId: notifications._id, // L'identifiant de la notification liée
-              interval: 30, // Intervalle en minutes (par exemple : 30 minutes)
-              nextSendTime: new Date(Date.now() + 30 * 60 * 1000), // Exemple : prochaine relance dans 30 minutes
-              status: 'active', // Correspond au statut "actif" comme chaîne de caractères
-              relancesCount: 0, // Initialement, aucune relance n'a été effectuée
-              createdAt: new Date(), // Date de création
-              updatedAt: new Date(), // Date de la dernière mise à jour (même valeur qu'au départ)
-            });
-          }
-      }
-        else {
-          const subscription = await db.collection('webpushtokens').insertOne({
-            userId: user._id, // Utiliser l'_id de l'utilisateur trouvé
-            webpushtoken: webpushtoken,  // Le token WebPush reçu
-          });
-      }
-      const payload = {
-        notification: {
-            title: 'Guardian Project - Notification',
-            body: 'Souscription aux notifications activée',
-            icon: 'assets/icons/icon-384x384.png',
-            actions: [
-                { action: 'bar', title: 'Action custom' },
-                { action: 'baz', title: 'Une autre action' },
-            ],
-            data: {
-                onActionClick: {
-                    default: { operation: 'openWindow',url: "http://localhost:4200/notifications" },
-                    bar: {
-                        operation: 'focusLastFocusedOrOpen',
-                        url: '/signin',
-                    },
-                    baz: {
-                        operation: 'navigateLastFocusedOrOpen',
-                        url: '/signin',
-                    },
-                },
-            },
-        },
-    };
-    webPush.sendNotification(req.body, JSON.stringify(payload));
     // Répondre avec un message de succès
-    res.status(200).json({
-      payload,
-      message: "WebPush token created and notification sent successfully",
-    });
+    res.status(200).json({ message: 'Désabonnement effectué avec succès. Les notifications ont été désactivées et le token WebPush supprimé (si existant).' });
   } catch (error) {
-    console.error("Error creating webpushtoken or sending notification:", error);
-    res.status(500).json({ message: 'Error creating webpushtoken or sending notification' });
+    console.error('Erreur lors du désabonnement:', error);
+    res.status(500).json({ message: 'Erreur serveur lors du désabonnement.' });
   }
 });
 
-app.post('/api/notify', checkJwt, async (req, res) => {
+
+app.get('/api/is-subscribe', checkJwt, async (req, res) => {
   try {
-    const notification_data = req.body;
+    // Récupérer l'ID de l'utilisateur à partir du token JWT
     const tokenFromJwt = req.auth.payload.sub;
-  
+
     // Vérifier si un utilisateur avec ce token existe dans la base de données
     const user = await db.collection('users').findOne({ token: tokenFromJwt });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
 
+    // Récupérer l'ID de l'utilisateur
+    const userId = user._id;
 
-    // Créer la prescription dans la collection "prescriptions"
-    const notification_table = await db.collection('notifications').insertOne({
-      userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
-      title: notification_data.subscription.notification.title,
-      body: notification_data.subscription.notification.body,
-      status:"unread",
-      icon:"/default-icon.png",
-      badge:"/badge-icon.png",
-      pris:false,
-      date: new Date(),
-      url:`${authConfig.appUri}`
-    });
-  
+    // Vérifier si l'utilisateur est abonné aux notifications dans la collection "notifications"
+    const notification = await db.collection('webpushtokens').findOne({ userId: userId});
+
+    if (notification) {
+      // L'utilisateur est abonné aux notifications
+      return res.status(200).json({
+        message: 'L\'utilisateur est abonné aux notifications.',
+        isSubscribed: true,
+      });
+    } else {
+      // L'utilisateur n'est pas abonné aux notifications
+      return res.status(200).json({
+        message: 'L\'utilisateur n\'est pas abonné aux notifications.',
+        isSubscribed: false,
+      });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la vérification de l\'abonnement aux notifications:', error);
+    return res.status(500).json({ message: 'Erreur serveur lors de la vérification de l\'abonnement' });
+  }
+});
+
+app.put('/api/subscription', checkJwt, async (req, res) => {
+  try {
+    // Extraire les données de la requête (webpushtoken)
+    const webpushtoken = req.body.webpushtoken;  // Le token WebPush envoyé par le client
+
+    // Vérifier si le webpushtoken est bien défini
+    if (!webpushtoken) {
+      return res.status(400).json({ message: 'Le token de notification (webpushtoken) est manquant.' });
+    }
+
+    // Récupérer le token de l'utilisateur depuis le JWT (authentification)
+    const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
+
+    // Configurer les détails VAPID pour l'envoi de notifications push
+    webPush.setVapidDetails(
+      'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
+      'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c',  // Clé publique VAPID
+      '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
+    );
+
+    // Vérifier si l'utilisateur existe dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    // Ajouter ou mettre à jour le token webPush dans la base de données
+    const user_webpushtoken = await db.collection('webpushtokens').findOne({ userId: user._id });
+
+    if (user_webpushtoken) {
+      // Si le token existe déjà, le mettre à jour
+      await db.collection('webpushtokens').updateOne(
+        { userId: user._id },
+        { $set: { webpushtoken } }
+      );
+    } else {
+      // Si le token n'existe pas, l'ajouter
+      await db.collection('webpushtokens').insertOne({
+        userId: user._id,
+        webpushtoken
+      });
+    }
+
+    // Mise à jour de la colonne `isSubscribed` dans la collection `notifications`
+    const updateNotificationsResult = await db.collection('notifications').updateMany(
+      { userId: user._id },
+      { $set: { isSubscribed: true } }
+    );
+
+    // Vérifier si des notifications ont été mises à jour
+    if (updateNotificationsResult.modifiedCount === 0) {
+      console.log('Aucune notification mise à jour pour cet utilisateur.');
+    }
+
+    // Préparer le payload de la notification
+    const payload = {
+      notification: {
+        title: 'Guardian Project - Notification',
+        body: 'Souscription aux notifications activée.',
+        icon: 'assets/icons/icon-384x384.png',
+        actions: [
+          { action: 'bar', title: 'Action custom' },
+          { action: 'baz', title: 'Une autre action' }
+        ],
+        data: {
+          onActionClick: {
+            default: { operation: 'openWindow', url: "http://localhost:4200/notifications" },
+            bar: { operation: 'focusLastFocusedOrOpen', url: '/signin' },
+            baz: { operation: 'navigateLastFocusedOrOpen', url: '/signin' }
+          }
+        }
+      }
+    };
+
+    // Envoyer la notification WebPush
+    await webPush.sendNotification(webpushtoken, JSON.stringify(payload));
+
+    // Répondre avec un message de succès
     res.status(200).json({
-      message: 'Notification envoyée et enregistrée avec succès',
-      notificationId: notification_table._id,
+      message: 'Souscription aux notifications réussie et notification envoyée.',
+      payload
     });
+
+  } catch (error) {
+    console.error("Erreur lors de la création du WebPushToken ou de l'envoi de la notification:", error);
+    res.status(500).json({ message: 'Erreur serveur lors de la création du WebPushToken ou de l\'envoi de la notification.' });
+  }
+});
+
+
+app.post('/api/check-subscribed-notify', checkJwt, async (req, res) => {
+  webPush.setVapidDetails(
+    'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
+    'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c',  // Clé publique VAPID
+    '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
+  );
+  try {
+    // Récupérer l'ID de l'utilisateur à partir du token JWT
+    const tokenFromJwt = req.auth.payload.sub;
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+    const subscription = db.collection('notifications').find(n => n.isSubscribed === true);
+    if (!subscription) {
+      return res.status(400).json({ message: 'L\'utilisateur n\'est pas abonné aux notifications.' });
+    }
+    const userId = user._id;
+    const payload = {
+      notification: {
+        title: 'Guardian Project - Notification',
+        body: 'Souscription aux notifications activée',
+        icon: 'assets/icons/icon-384x384.png',
+        actions: [
+          { action: 'bar', title: 'Action custom' },
+          { action: 'baz', title: 'Une autre action' },
+        ],
+        data: {
+          onActionClick: {
+            default: { operation: 'openWindow', url: `${authConfig.appUri}/home-page` },
+            bar: { operation: 'focusLastFocusedOrOpen', url: '/signin' },
+            baz: { operation: 'navigateLastFocusedOrOpen', url: '/signin' },
+          },
+        },
+      },
+    };
+    const notifications = await db.collection('notifications').find({ userId: userId }).toArray();
+    for (let i = 0; i < notifications.length; i++) {
+      const notification = notifications[i];
+      const prescriptionId = notifications[i].prescriptionId
+      const notificationDate = new Date(notification.dateNotification); 
+      const currentTime = new Date();
+      const prescription = await db.collection('prescriptions').findOne({ _id: prescriptionId });
+      let datePrescribed = new Date(prescription.timePrescribed)
+      console.log(datePrescribed,currentTime.getUTCHours())
+      if(prescription.frequence == "1 fois par jour" && 
+        notificationDate.getUTCDate() === currentTime.getUTCDate() && 
+        datePrescribed.getUTCHours() == currentTime.getUTCHours() && 
+        datePrescribed.getMinutes() == currentTime.getMinutes()
+      && notification.nbNotification < 1
+      ){
+        await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+        let newNbNotification = notification.nbNotification + 1;
+        const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+          { _id: notification._id },  // Critère de recherche pour l'ID spécifique
+          {
+            $set: {
+              dateNotification: currentTime,   // Mettre à jour la date de notification
+              nbNotification: newNbNotification // Incrémenter le nombre de notifications
+            }
+          },
+          { returnDocument: 'after' } // Retourne le document après mise à jour
+        );
+        if (updatedNotification) {
+          console.log(updatedNotification)
+          return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+        } else {
+          return res.status(404).json({ message: 'Notification non trouvée' });
+        }
+        
+        }
+    }
+
+ 
+
+    return res.status(200).json({ message: 'Aucune notification à envoyer à ce moment.' });
+
   } catch (error) {
     console.error('Erreur lors de l\'envoi ou de l\'enregistrement de la notification:', error);
     res.status(500).json({ message: 'Erreur lors de l\'envoi ou de l\'enregistrement de la notification' });
   }
 });
 
+
+
+
 app.post('/api/start-relance', checkJwt, async (req, res) => {
-  try {
-    const tokenFromJwt = req.auth.payload.sub;
-
-   const user = await db.collection('users').findOne({ token: tokenFromJwt });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    //console.log("TOKEN : ",user._id)
-    // Vérifiez si une relance est déjà active
-    const existingRelance = await db.collection('relances').findOne({ userId: user._id, status: 'active' });
-    if (existingRelance) {
-      console.log(existingRelance)
-      return res.status(400).json({ message: 'Relance already active' });
-    }
-    const notifications = await db.collection('notifications').findOne({ userId:user._id });
-    webPush.setVapidDetails(
-      'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
-      'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c', // Clé publique VAPID
-      '8gw1gQaZkzk-GpQ5vM6Df9Jhw3kB2YKHig-_8686Kzk'  // Clé privée VAPID
-    );
-
-    // Enregistrer une nouvelle relance
-    const newRelance = await db.collection('relances').insertOne({
-      userId: user._id, // L'identifiant de l'utilisateur lié à cette relance
-      notificationId: notifications._id, // L'identifiant de la notification liée
-      interval: 30, // Intervalle en minutes (par exemple : 30 minutes)
-      nextSendTime: new Date(Date.now() + 30 * 60 * 1000), // Exemple : prochaine relance dans 30 minutes
-      status: 'active', // Correspond au statut "actif" comme chaîne de caractères
-      relancesCount: 0, // Initialement, aucune relance n'a été effectuée
-      createdAt: new Date(), // Date de création
-      updatedAt: new Date(), // Date de la dernière mise à jour (même valeur qu'au départ)
-    });
-    console.log("RELANCES : ",newRelance)
-
-    const intervalId = setInterval(async () => {
-      console.log("NOTIFICATION RELANCE : ",newRelance)
-      // Vérifier si la relance est toujours active
-      const isActive = await db.collection('relances').findOne({ _id: newRelance.insertedId, status: 'active' });
-    
-      // Si la relance n'est plus active, on arrête l'intervalle
-      if (!isActive) {
-        clearInterval(intervalId); // Arrêter si la relance est annulée
-        return;
-      }
-    
-      // Récupérer les informations de l'utilisateur et de la notification
-      const user = await db.collection('users').findOne({ _id: newRelance.userId });
-      const userSubscription = await db.collection('webpushtokens').findOne({ userId: user._id });
-      const notificationPayload = {
-        notification: {
-          title: 'Rappel - Relance Active',
-          body: 'Ceci est une relance automatique.',
-          icon: '/default-icon.png',
-          data: { url: 'http://localhost:4200/notifications' }
-        }
-      };
-    
-      // Si l'utilisateur a un token de web push, envoyer la notification
-      if (userSubscription) {
-      console.log("SUBSCRIPTION : ",userSubscription.webpushtoken)
-        webPush.sendNotification(JSON.parse(userSubscription.webpushtoken), JSON.stringify(notificationPayload))
-          .then(response => {
-            console.log('Notification envoyée', response);
-          })
-          .catch(err => {
-            console.error('Erreur lors de l\'envoi de la notification', err);
-          });
-      }
-    }, 2 * 60 * 1000); // Toutes les 2 minutes
-    // Si une relance est annulée ou terminée, nettoyez l'intervalle
-    await db.collection('relances').updateOne(
-      { _id: newRelance.insertedId },
-      { $set: { status: 'completed' } }
-    );
-
-    res.status(200).json({ message: 'Relance started successfully' });
-  } catch (error) {
-    console.error('Error starting relance:', error);
-    res.status(500).json({ message: 'Error starting relance' });
-  }
 });
 
 // Start server

@@ -4,28 +4,34 @@ import config from '../../auth_config.json';
 import { Observable } from 'rxjs';
 import { Question } from 'src/models/question';
 import { Router } from '@angular/router';
+import { SwPush } from '@angular/service-worker';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private router: Router,private http: HttpClient) {}
+  displayMessage = false;
+  NotifsAllowed = false;
+  sub: any;
+  private relanceIntervalId: any = null;
+  PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
+  notification_data: any;
+  constructor(readonly swPush: SwPush,private router: Router,private http: HttpClient) {
+
+   
+  }
 
   handleRedirection(valeur: boolean): void {
-    console.log(valeur)
+    
     if (valeur) {
       // Si 'valeur' est true, redirigez vers la page d'accueil
+     
       this.router.navigate(['/home-page']);
+     
     } else {
       // Si 'valeur' est false, redirigez vers la page du questionnaire
       this.router.navigate(['/questionnaire']);
     }
-  }
-
-
-  sendNotification(notifications:any) {
-    console.log(notifications,"API")
-    return this.http.post<any>(`${config.apiUri}/api/notify`, notifications);
   }
 
   submitResponses(responses: any): Observable<any> {
@@ -35,15 +41,32 @@ export class ApiService {
   checkIfUserHasAnswered(): Observable<any> {
     return this.http.get(`${config.apiUri}/api/check-answers`);
   }
+
+  checkIsSubsribe(): Observable<any> {
+    return this.http.get(`${config.apiUri}/api/is-subscribe`);
+  }
+
+  checkRelanceNotification(){
+    return this.http.get(`${config.apiUri}/api/check-notifications`);
+  }
+  unSubsribeNotifications(sub:any): Observable<any> {
+    return this.http.put<any>(`${config.apiUri}/api/unsubscribe`, { webpushtoken: sub });
+  }
+  async unsubscribeFromNotifications() {
+    const sub = await this.swPush.requestSubscription({
+      serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
+    });
+    this.unSubsribeNotifications(sub).subscribe(res=>{
+
+    })
+  }
   // POST request for subscription
-  postSubscription(subscription: any,relance:boolean): Observable<any> {
+  putSubscription(subscription: any,relance:boolean): Observable<any> {
     const object = {
-      webpushtoken:subscription,
-      relances: relance
+      webpushtoken:subscription
     }
     const url = `${config.apiUri}/api/subscription`; 
-    console.log("SOUSCRIPTION : ", subscription);
-    return this.http.post<any>(url, subscription);
+    return this.http.put<any>(url,object);
   }
   // Récupérer toutes les questions depuis l'API
   getQuestions(): Observable<Question[]> {
@@ -62,6 +85,30 @@ export class ApiService {
     return this.http.get<any>(url);
   }
 
+  public async subscribeToPush(){
+    try {
+      const sub = await this.swPush.requestSubscription({
+        serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
+      });
+      console.log('sub',sub);
+      this.sub = sub;
+      this.putSubscription(sub,false).subscribe(res=>{
+
+      });      
+    } catch (err) {
+      console.error('Could not subscribe due to:', err);
+    }
+  }
+  async checkNotify():Promise<any>{
+    const sub = await this.swPush.requestSubscription({
+      serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
+    });
+    const object = {
+      webpushtoken:sub,
+    }
+    const url = `${config.apiUri}/api/check-subscribed-notify`; // URL de l'API pour envoyer les prescriptions
+    return this.http.post<any>(url,object).toPromise();
+  }
   // POST request for prescriptions
   postPrescriptions(prescription: any): Observable<any> {
     const url = `${config.apiUri}/api/prescriptions`; // URL de l'API pour envoyer les prescriptions

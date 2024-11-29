@@ -21,7 +21,15 @@ export class HomePageComponent {
   constructor(private router: Router,private apiService:ApiService) {}
 
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Appel initial de la méthode checkNotify
+    this.callCheckNotify();
+    // Répéter l'appel toutes les 10 secondes
+    setInterval(() => {
+      this.callCheckNotify();
+    }, 10000);
+  
+    // Vérification des réponses de l'utilisateur
     this.apiService.checkIfUserHasAnswered().subscribe(
       (response) => {
         this.message = response.message;  // Affiche le message
@@ -33,10 +41,17 @@ export class HomePageComponent {
       }
     );
   }
-
-
   
-
+  // Méthode pour appeler checkNotify
+  async callCheckNotify() {
+    try {
+      const response = await this.apiService.checkNotify(); // Convertir l'Observable en Promise
+      console.log('Réponse de check-notify', response);
+    } catch (error) {
+      console.error('Erreur lors de l\'appel à check-notify', error);
+    }
+  }
+  
   viewPrescriptions() {
     // Redirige vers la page de liste des prescriptions
     this.router.navigate(['/list-prescriptions']); // Assurez-vous que cette route existe

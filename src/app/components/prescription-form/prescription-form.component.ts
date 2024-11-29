@@ -4,24 +4,33 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { NavBarComponent } from '../nav-bar/nav-bar.component';
 import { ApiService } from 'src/services/api.service';
 import { Medication } from 'src/models/medication';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-prescription-form',
   templateUrl: './prescription-form.component.html',
   styleUrls: ['./prescription-form.component.css'],
   standalone:true,
-  imports:[ReactiveFormsModule,CommonModule, NavBarComponent]
+  imports:[ReactiveFormsModule,CommonModule, NavBarComponent,SweetAlert2Module]
 })
 export class PrescriptionFormComponent implements OnInit {
   prescriptionForm: FormGroup;
   medications:Medication[];
-  constructor(private fb: FormBuilder, private apiService:ApiService) {
+
+  constructor(private router:Router, private fb: FormBuilder, private apiService:ApiService) {
     this.prescriptionForm = this.fb.group({
       medicationId: ['', Validators.required],
-      quantity: [1, [Validators.required, Validators.min(1)]],
       dosage: ['', Validators.required],
-      rythme: ['', Validators.required],
+      frequence: ['', Validators.required],  // Champ pour la fréquence
+      datePrescribed: [new Date().toISOString(), Validators.required], // Date actuelle
+      timePrescribed: [new Date().toISOString(), Validators.required], // Heure actuelle
     });
   }
+
+  
+  
 
   ngOnInit(): void {
     this.apiService.getMedications().subscribe({
@@ -36,6 +45,19 @@ export class PrescriptionFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors de la récupération des médicaments :', err);
+      }
+    });
+  }
+  showSuccessAlert() {
+    Swal.fire({
+      title: 'Succès!',
+      text: 'La prescription a été remplie avec succès.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Rediriger vers la page d'accueil (home-page)
+        this.router.navigate(['/home-page']);
       }
     });
   }
@@ -54,13 +76,15 @@ export class PrescriptionFormComponent implements OnInit {
       const prescriptionData = {
         medicationId: selectedMedication?._id || null, // Inclure l'ID du médicament
         medicationName: selectedMedication?.name || 'Médicament inconnu',
-        quantity: formData.quantity,
+        frequence: formData.frequence,
         dosage: formData.dosage,
-        rythme: formData.rythme
+        datePrescribed: formData.datePrescribed,
+        timePrescribed: formData.timePrescribed
       };
 
       this.apiService.postPrescriptions(prescriptionData).subscribe({
         next: (response) => {
+          this.showSuccessAlert()
           console.log('Prescription ajoutée avec succès :', response);
         },
         error: (err) => {

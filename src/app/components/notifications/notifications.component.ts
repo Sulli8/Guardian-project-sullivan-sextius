@@ -1,162 +1,139 @@
-import { Component } from '@angular/core';
-import { SwPush } from '@angular/service-worker';
-import { ApiService } from '../../../services/api.service';
 import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { SwPush } from '@angular/service-worker';
+import Swal from 'sweetalert2'; // Import SweetAlert2
+import { ApiService } from '../../../services/api.service';
 import { NavBarComponent } from '../nav-bar/nav-bar.component';
-@Component({
 
+@Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css'],
-  imports: [CommonModule,NavBarComponent],
-  standalone:true
+  imports: [CommonModule, NavBarComponent],
+  standalone: true
 })
-export class NotificationsComponent {
+export class NotificationsComponent implements OnInit, OnDestroy {
   displayMessage = false;
   NotifsAllowed = false;
-  sub:any;
+  sub: any;
   private relanceIntervalId: any = null;
   PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
-  PRIVATE_VAPID_KEY_OF_SERVER = ''
-  notification_data:any
-  constructor(readonly swPush: SwPush,private api:ApiService) {
+  notification_data: any;
+ 
+  constructor(readonly swPush: SwPush, private api: ApiService) {
+  
+  }
+
+  ngOnInit(): void {
+    // Vérification de l'état de la permission des notifications
     if (Notification.permission === 'granted') {
-      console.log('notif granted');
-      this.NotifsAllowed = true;
+      console.log('Notification granted');
+      this.NotifsAllowed = true; // Si l'utilisateur a déjà autorisé, on active le bouton
     } else if (Notification.permission === 'denied') {
-      this.displayMessage = true;
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            this.NotifsAllowed = true;
-          }
-        });
+      this.displayMessage = true; // Si l'utilisateur a refusé, on affiche un message
     } else {
+      // Si l'utilisateur n'a pas encore pris de décision, on demande la permission
       Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
-          this.NotifsAllowed = true;
+          this.NotifsAllowed = true; // Si l'utilisateur accepte, on active le bouton
+        } else {
+          this.displayMessage = true; // Sinon, on affiche un message
         }
       });
     }
+    this.checkIsSubscribed();  // Vérifier si l'utilisateur est abonné dès que le composant est initialisé
   }
 
+  /**
+   * Vérifie si l'utilisateur est abonné aux notifications
+   */
+  checkIsSubscribed(): void {
+    this.api.checkIsSubsribe().subscribe(
+      (response) => {
+        // Vérification de l'état de l'abonnement
+        if (response.isSubscribed) {
+          this.NotifsAllowed = true;  // L'utilisateur est abonné
+          this.showSuccessAlert('Vous êtes déjà abonné aux notifications.');
+        } else {
+          this.NotifsAllowed = false; // L'utilisateur n'est pas abonné
+          this.showInfoAlert('Vous n\'êtes pas encore abonné aux notifications.');
+        }
+      },
+      (error) => {
+        this.NotifsAllowed = false;
+        this.showErrorAlert('Erreur lors de la vérification de l\'abonnement.');
+      }
+    );
+  }
 
-/*  public async subscribeToPush() {
-    console.log('Starting subscription process...');
+  /**
+   * Désabonne l'utilisateur des notifications push
+   */
+  async unsubscribeFromPush(): Promise<void> {
     try {
-      if (Notification.permission !== 'granted') {
-        console.warn('Notifications permission is not granted.');
-        return;
-      }
-  
-      if (!this.swPush.isEnabled) {
-        console.error('Service Workers are not enabled in this environment.');
-        return;
-      }
-  
-      if (!this.PUBLIC_VAPID_KEY_OF_SERVER) {
-        console.error('Public VAPID key is missing.');
-        return;
-      }
-  
-      console.log('Requesting subscription...');
-      const sub = await this.swPush.requestSubscription({
-        serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
-      });
-  
-      console.log('Subscription successful:', JSON.stringify(sub, null, 2));
-      this.sub = sub;
-  
-      this.api.postSubscription(sub).subscribe({
-        next: (res) => console.log('Subscription successfully sent to server:', res),
-        error: (err) => console.error('Error sending subscription to server:', err),
-      });
-    } catch (err) {
-      console.error('Could not subscribe due to:', err);
-      if (err instanceof Error) {
-        console.error('Error message:', err.message);
-        console.error('Stack trace:', err.stack);
-      }
+      // Attendre la réponse de l'API pour désabonner l'utilisateur
+      const response = await this.api.unsubscribeFromNotifications();
+      this.showSuccessAlert('Vous avez été désabonné avec succès des notifications.');
+      this.NotifsAllowed = false;  // Mettre à jour l'état NotifsAllowed
+    } catch (error) {
+      // Gérer les erreurs si la requête échoue
+      this.showErrorAlert('Erreur lors de la désinscription des notifications.');
     }
-    console.log('Subscription process complete.');
   }
-  */
-  public stopRelance() {
-    if (this.relanceIntervalId !== null) {
+
+  /**
+   * Souscrire l'utilisateur aux notifications push
+   */
+  async subscribeToPush(): Promise<void> {
+    try {
+      // Attendre la réponse de l'API pour souscrire aux notifications
+      const response = await this.api.subscribeToPush();
+
+      // Si la souscription réussit, afficher le message de succès
+      this.showSuccessAlert('Souscription aux notifications réussie.');
+      this.NotifsAllowed = true;  // Mettre à jour l'état NotifsAllowed
+    } catch (error) {
+      // Gérer les erreurs si la requête échoue
+      this.showErrorAlert('Erreur lors de la souscription aux notifications.');
+    }
+  }
+
+  /**
+   * Afficher une SweetAlert de succès
+   */
+  private showSuccessAlert(message: string): void {
+    Swal.fire({
+      icon: 'success',
+      title: 'Succès',
+      text: message,
+    });
+  }
+
+  /**
+   * Afficher une SweetAlert d'information
+   */
+  private showInfoAlert(message: string): void {
+    Swal.fire({
+      icon: 'info',
+      title: 'Information',
+      text: message,
+    });
+  }
+
+  /**
+   * Afficher une SweetAlert d'erreur
+   */
+  private showErrorAlert(message: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erreur',
+      text: message,
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.relanceIntervalId) {
       clearInterval(this.relanceIntervalId);
-      this.relanceIntervalId = null; // Réinitialiser pour éviter des appels multiples
-      console.log('Relance arrêtée avec succès.');
-    } else {
-      console.log('Aucune relance active à arrêter.');
     }
   }
-  
- public async startRelance() {
-  try {
-    // Démarrer un intervalle pour exécuter les opérations périodiques
-    this.relanceIntervalId = setInterval(async () => {
-      try {
-        // Demander la souscription Push
-        const sub = await this.swPush.requestSubscription({
-          serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
-        });
-        console.log('Souscription réussie:', sub);
-
-        // Enregistrer la souscription côté serveur
-        this.sub = sub;
-        this.api.postSubscription(sub, false).subscribe((res) => {
-          if (res) {
-            console.log('Souscription enregistrée côté serveur:', res);
-
-            // Préparer le payload de notification
-            const payload = {
-              title: 'Relance automatique',
-              body: 'Ceci est un rappel envoyé toutes les 10 secondes.',
-              icon: '/assets/icons/push-icon.png',
-              data: { url: 'https://votre-application.com' },
-            };
-
-            // Envoyer la notification
-            this.api.sendNotification({ subscription: res.payload, payload }).subscribe(
-              (response) => {
-                console.log('Notification envoyée:', response);
-              },
-              (error) => {
-                console.error('Erreur lors de l\'envoi de la notification:', error);
-              }
-            );
-          }
-        });
-      } catch (err) {
-        console.error('Erreur dans le processus de relance:', err);
-        // Arrêter l'intervalle en cas d'erreur critique
-        this.stopRelance();
-      }
-    }, 10 * 1000); // Toutes les 10 secondes
-  } catch (err) {
-    console.error('Impossible de démarrer les relances :', err);
-  }
-}
-
-
-  public async subscribeToPush() {
-    try {
-      const sub = await this.swPush.requestSubscription({
-        serverPublicKey: this.PUBLIC_VAPID_KEY_OF_SERVER,
-      });
-      console.log('sub',sub);
-      this.sub = sub;
-      this.api.postSubscription(sub,false).subscribe(res=>{
-
-        this.api.sendNotification(res.payload).subscribe(res => {
-          console.log(res)
-        })
-
-      });
-
-      
-    } catch (err) {
-      console.error('Could not subscribe due to:', err);
-    }
-  }
-
 }

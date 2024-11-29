@@ -16,7 +16,16 @@ export class ListPrescriptionsComponent implements OnInit {
 
   constructor(private apiService: ApiService) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+   
+    (await this.apiService.checkNotify()).subscribe(
+      response => {
+        console.log('Réponse de check-notify', response);
+      },
+      error => {
+        console.error('Erreur lors de l\'appel à check-notify', error);
+      }
+    );
     this.loadPrescriptions();
   }
   deletePrescription(id: number): void {

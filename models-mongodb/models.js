@@ -19,14 +19,15 @@ const medicamentSchema = new mongoose.Schema({
 const Medicament = mongoose.model('Medicaments', medicamentSchema);  // Collection name in plural form
 
 // Schema for Prescriptions
-const prescriptionSchema = new mongoose.Schema({
-  quantity: { type: Number, required: true },
-  rythme: { type: Number, required: true },
+const PrescriptionSchema = new mongoose.Schema({
+  frequence: { type: String, required: true },  // Nouveau champ pour la fréquence
   dosage: { type: String, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },  // Reference to "Users"
-  medicamentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicaments', required: true }  // Reference to "Medicaments"
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Référence à l'utilisateur
+  medicamentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicament', required: true },  // Référence au médicament
+  datePrescribed: { type: Date, required: true },  // Date de la prescription
+  timePrescribed: { type: Date, required: true },  // Heure de la prescription
 });
-const Prescription = mongoose.model('Prescriptions', prescriptionSchema);  // Collection name in plural form
+const Prescription = mongoose.model('Prescriptions', PrescriptionSchema);  // Collection name in plural form
 
 const questionSchema = new mongoose.Schema({
   step: Number,
@@ -97,19 +98,37 @@ const notificationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['unread', 'read','taken'],
+    enum: ['unread', 'read', 'taken'],
     default: 'unread',
   },
   sentAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now, // Date de l'envoi de la notification
   },
   url: String, // Optionnel, lien de redirection
   data: {
     type: Object,
     default: {}, // Données supplémentaires (par exemple, pour stocker des actions spécifiques)
   },
+  prescriptionId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Prescriptions', // Référence à la collection "prescriptions"
+    required: true, // Obligatoire pour chaque notification
+  },
+  nbNotification: {
+    type: Number,
+    default: 0, // Le nombre de notifications envoyées pour cette prescription
+  },
+  dateNotification: {
+    type: Date,
+    default: Date.now, // La date de la dernière notification envoyée
+  },
+  isSubscribed: { // Nouveau champ pour l'activation de la souscription
+    type: Boolean,
+    default: true, // Par défaut, la souscription est activée
+  }
 });
+
 
 const Notification = mongoose.model('Notification', notificationSchema);
 

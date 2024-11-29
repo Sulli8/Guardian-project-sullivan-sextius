@@ -16,22 +16,7 @@
           Vous devez sélectionner un médicament.
         </div>
       </div>
-  
-      <!-- Quantité -->
-      <div class="form-group">
-        <label for="quantity">Quantité</label>
-        <input
-          id="quantity"
-          type="number"
-          class="form-control"
-          formControlName="quantity"
-          placeholder="Entrez la quantité"
-        />
-        <div *ngIf="prescriptionForm.get('quantity')?.invalid && prescriptionForm.get('quantity')?.touched" class="text-danger">
-          La quantité doit être un nombre supérieur à 0.
-        </div>
-      </div>
-  
+    
       <!-- Dosage -->
       <div class="form-group">
         <label for="dosage">Dosage</label>
@@ -46,19 +31,48 @@
           Le dosage est requis.
         </div>
       </div>
+  <!-- Date de prescription -->
+  <div class="form-group">
+    <label for="datePrescribed">Date de prescription</label>
+    <input
+      id="datePrescribed"
+      type="date"
+      class="form-control"
+      formControlName="datePrescribed"
+      [value]="prescriptionForm.get('datePrescribed')?.value"
+    />
+    <div *ngIf="prescriptionForm.get('datePrescribed')?.invalid && prescriptionForm.get('datePrescribed')?.touched" class="text-danger">
+      La date est requise.
+    </div>
+  </div>
 
+  <!-- Heure de prescription -->
+  <div class="form-group">
+    <label for="timePrescribed">Heure de prescription</label>
+    <input
+      id="timePrescribed"
+      type="time"
+      class="form-control"
+      formControlName="timePrescribed"
+      [value]="prescriptionForm.get('timePrescribed')?.value"
+    />
+    <div *ngIf="prescriptionForm.get('timePrescribed')?.invalid && prescriptionForm.get('timePrescribed')?.touched" class="text-danger">
+      L'heure est requise.
+    </div>
+  </div>
+      <!-- Fréquence -->
       <div class="form-group">
-        <label for="dosage">Rythme prescription</label>
-        <input
-          id="rythme"
-          type="text"
-          class="form-control"
-          formControlName="rythme"
-          placeholder="Entrez le rythme de la prescription"
-        />
-        <div *ngIf="prescriptionForm.get('rythme')?.invalid && prescriptionForm.get('rythme')?.touched" class="text-danger">
-          Le rythme est requis.
-        </div>
+        <label for="frequence">Fréquence</label>
+          <select formControlName="frequence">
+            <option value="1 fois par jour">1 fois par jour</option>
+            <option value="2 fois par jour">2 fois par jour</option>
+            <option value="toutes les 4 heures">Toutes les 4 heures</option>
+            <option value="toutes les 8 heures">Toutes les 8 heures</option>
+            <option value="toutes les 12 heures">Toutes les 12 heures</option>
+          </select>
+          <div *ngIf="prescriptionForm.get('frequence')?.invalid && prescriptionForm.get('frequence')?.touched" class="text-danger">
+            La fréquence est requise.
+          </div>
       </div>
   
       <!-- Bouton de soumission -->
@@ -66,5 +80,4 @@
         Soumettre
       </button>
     </form>
-  </div>
-  
+</div>
