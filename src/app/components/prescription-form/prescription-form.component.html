@@ -66,9 +66,11 @@
           <select formControlName="frequence">
             <option value="1 fois par jour">1 fois par jour</option>
             <option value="2 fois par jour">2 fois par jour</option>
-            <option value="toutes les 4 heures">Toutes les 4 heures</option>
-            <option value="toutes les 8 heures">Toutes les 8 heures</option>
-            <option value="toutes les 12 heures">Toutes les 12 heures</option>
+            <option value="Toutes les 30 secondes">Toutes les 30 secondes</option>
+            <option value="Toutes les 10 minutes">Toutes les 10 minutes</option>
+            <option value="Toutes les 4 heures">Toutes les 4 heures</option>
+            <option value="Toutes les 8 heures">Toutes les 8 heures</option>
+            <option value="Toutes les 12 heures">Toutes les 12 heures</option>
           </select>
           <div *ngIf="prescriptionForm.get('frequence')?.invalid && prescriptionForm.get('frequence')?.touched" class="text-danger">
             La fréquence est requise.

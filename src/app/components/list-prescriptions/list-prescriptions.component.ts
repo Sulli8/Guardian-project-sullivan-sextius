@@ -17,16 +17,20 @@ export class ListPrescriptionsComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   async ngOnInit() {
-   
-    (await this.apiService.checkNotify()).subscribe(
-      response => {
-        console.log('Réponse de check-notify', response);
-      },
-      error => {
-        console.error('Erreur lors de l\'appel à check-notify', error);
-      }
-    );
+    this.callCheckNotify();
+    // Répéter l'appel toutes les 10 secondes
+    setInterval(() => {
+      this.callCheckNotify();
+    }, 10000);
     this.loadPrescriptions();
+  }
+  async callCheckNotify() {
+    try {
+      const response = await this.apiService.checkNotify(); // Convertir l'Observable en Promise
+      console.log('Réponse de check-notify', response);
+    } catch (error) {
+      console.error('Erreur lors de l\'appel à check-notify', error);
+    }
   }
   deletePrescription(id: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette prescription ?')) {

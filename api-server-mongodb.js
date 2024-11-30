@@ -543,24 +543,7 @@ app.post('/api/check-subscribed-notify', checkJwt, async (req, res) => {
       return res.status(400).json({ message: 'L\'utilisateur n\'est pas abonné aux notifications.' });
     }
     const userId = user._id;
-    const payload = {
-      notification: {
-        title: 'Guardian Project - Notification',
-        body: 'Souscription aux notifications activée',
-        icon: 'assets/icons/icon-384x384.png',
-        actions: [
-          { action: 'bar', title: 'Action custom' },
-          { action: 'baz', title: 'Une autre action' },
-        ],
-        data: {
-          onActionClick: {
-            default: { operation: 'openWindow', url: `${authConfig.appUri}/home-page` },
-            bar: { operation: 'focusLastFocusedOrOpen', url: '/signin' },
-            baz: { operation: 'navigateLastFocusedOrOpen', url: '/signin' },
-          },
-        },
-      },
-    };
+   
     const notifications = await db.collection('notifications').find({ userId: userId }).toArray();
     for (let i = 0; i < notifications.length; i++) {
       const notification = notifications[i];
@@ -568,34 +551,236 @@ app.post('/api/check-subscribed-notify', checkJwt, async (req, res) => {
       const notificationDate = new Date(notification.dateNotification); 
       const currentTime = new Date();
       const prescription = await db.collection('prescriptions').findOne({ _id: prescriptionId });
-      let datePrescribed = new Date(prescription.timePrescribed)
-      console.log(datePrescribed,currentTime.getUTCHours())
-      if(prescription.frequence == "1 fois par jour" && 
-        notificationDate.getUTCDate() === currentTime.getUTCDate() && 
-        datePrescribed.getUTCHours() == currentTime.getUTCHours() && 
-        datePrescribed.getMinutes() == currentTime.getMinutes()
-      && notification.nbNotification < 1
-      ){
-        await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
-        let newNbNotification = notification.nbNotification + 1;
-        const updatedNotification = await db.collection('notifications').findOneAndUpdate(
-          { _id: notification._id },  // Critère de recherche pour l'ID spécifique
-          {
-            $set: {
-              dateNotification: currentTime,   // Mettre à jour la date de notification
-              nbNotification: newNbNotification // Incrémenter le nombre de notifications
-            }
+      const payload = {
+        notification: {
+          title: 'Guardian Project - Notification'+notification.title,
+          body: notification.body,
+          icon: 'assets/icons/icon-guardian-project-notification.png',
+          actions: [
+            { action: 'bar', title: 'Action custom' },
+            { action: 'baz', title: 'Une autre action' },
+          ],
+          data: {
+            onActionClick: {
+              default: { operation: 'openWindow', url: `${authConfig.appUri}/home-page?read=`+notification._id},
+              bar: { operation: 'focusLastFocusedOrOpen', url: '/signin' },
+              baz: { operation: 'navigateLastFocusedOrOpen', url: '/signin' },
+            },
           },
-          { returnDocument: 'after' } // Retourne le document après mise à jour
-        );
-        if (updatedNotification) {
-          console.log(updatedNotification)
-          return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
-        } else {
-          return res.status(404).json({ message: 'Notification non trouvée' });
-        }
-        
-        }
+        },
+      };
+      if(prescription){
+        let datePrescribed = new Date(prescription.timePrescribed)
+        if(prescription.frequence == "1 fois par jour" &&  
+          datePrescribed.getUTCHours() == currentTime.getUTCHours() && 
+          datePrescribed.getMinutes() == currentTime.getMinutes() && 
+          notification.nbNotification < 1
+        ){
+          await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+          let newNbNotification = notification.nbNotification + 1;
+          const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+            { _id: notification._id },  // Critère de recherche pour l'ID spécifique
+            {
+              $set: {
+                dateNotification: currentTime,   // Mettre à jour la date de notification
+                nbNotification: newNbNotification // Incrémenter le nombre de notifications
+              }
+            },
+            { returnDocument: 'after' } // Retourne le document après mise à jour
+          );
+          if (updatedNotification) {
+            console.log(updatedNotification)
+            return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+          } else {
+            return res.status(404).json({ message: 'Notification non trouvée' });
+          }
+          
+          } else {
+            const increment = await db.collection('notifications').findOneAndUpdate(
+              { _id: notification._id },  // Critère de recherche pour l'ID spécifique
+              {
+                $set: {
+                  dateNotification: currentTime, 
+                  nbNotification: 0
+                }
+              },
+              { returnDocument: 'after' } // Retourne le document après mise à jour
+            );
+
+            if (increment) {
+             
+              return res.status(200).json({ message: 'Nombre de Notification remis à zéro ', updatedNotification });
+            } 
+          }
+
+          const diffMinutes = Math.abs(datePrescribed.getTime() - currentTime.getTime()) / (1000 * 60);
+          if (prescription.frequence == "2 fois par jour" &&
+              (diffMinutes == 30) &&
+              notification.nbNotification < 2) {
+            await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+            let newNbNotification = notification.nbNotification + 1;
+            const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+              { _id: notification._id },  // Critère de recherche pour l'ID spécifique
+              {
+                $set: {
+                  dateNotification: currentTime,   // Mettre à jour la date de notification
+                  nbNotification: newNbNotification // Incrémenter le nombre de notifications
+                }
+              },
+              { returnDocument: 'after' } // Retourne le document après mise à jour
+            );
+            if (updatedNotification) {
+              console.log(updatedNotification)
+              return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+            } else {
+              return res.status(404).json({ message: 'Notification non trouvée' });
+            }
+            
+            } else {
+              const increment = await db.collection('notifications').findOneAndUpdate(
+                { _id: notification._id },  // Critère de recherche pour l'ID spécifique
+                {
+                  $set: {
+                    dateNotification: currentTime, 
+                    nbNotification: 0
+                  }
+                },
+                { returnDocument: 'after' } // Retourne le document après mise à jour
+              );
+  
+              if (increment) {
+               
+                return res.status(200).json({ message: 'Nombre de Notification remis à zéro ', updatedNotification });
+              } 
+            }
+
+            if (prescription.frequence == "Toutes les 10 minutes" && diffMinutes == 10) {
+              await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+             
+              const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+                { _id: notification._id }, 
+                {
+                  $set: {
+                    dateNotification: currentTime
+                  }
+                },
+                { returnDocument: 'after' } // Retourne le document après mise à jour
+              );
+            
+              // Vérifier si la notification a bien été mise à jour
+              if (updatedNotification) {
+                console.log(updatedNotification);
+                return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+              } else {
+                return res.status(404).json({ message: 'Notification non trouvée' });
+              }
+            }
+            
+
+              if (prescription.frequence == "Toutes les 4 heures" && diffMinutes == 240) {
+                // Envoi de la notification
+                await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+              
+         
+                const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+                  { _id: notification._id },  // Critère de recherche pour l'ID spécifique
+                  {
+                    $set: {
+                      dateNotification: currentTime
+                
+                    }
+                  },
+                  { returnDocument: 'after' } // Retourne le document après mise à jour
+                );
+              
+                if (updatedNotification) {
+                  console.log(updatedNotification);
+                  return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+                } else {
+                  return res.status(404).json({ message: 'Notification non trouvée' });
+                }
+              }
+
+
+              if (prescription.frequence == "Toutes les 8 heures" && diffMinutes == 480) {
+                // Envoi de la notification
+                await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+              
+             
+                const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+                  { _id: notification._id },  // Critère pour trouver la notification
+                  {
+                    $set: {
+                      dateNotification: currentTime   // Mettre à jour la date de notification
+       
+                    }
+                  },
+                  { returnDocument: 'after' } // Retourne le document après mise à jour
+                );
+              
+                // Vérifier si la notification a bien été mise à jour
+                if (updatedNotification) {
+                  console.log(updatedNotification);
+                  return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+                } else {
+                  return res.status(404).json({ message: 'Notification non trouvée' });
+                }
+              }
+
+              if (prescription.frequence == "Toutes les 12 heures" && diffMinutes == 720) {
+            
+                await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+              
+              
+                const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+                  { _id: notification._id },  // Critère pour trouver la notification
+                  {
+                    $set: {
+                      dateNotification: currentTime
+                    }
+                  },
+                  { returnDocument: 'after' } // Retourne le document après mise à jour
+                );
+              
+                // Vérifier si la notification a bien été mise à jour
+                if (updatedNotification) {
+                  console.log(updatedNotification);
+                  return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+                } else {
+                  return res.status(404).json({ message: 'Notification non trouvée' });
+                }
+              }
+
+              const diffMilliseconds = Math.abs(datePrescribed.getTime() - currentTime.getTime());
+              const diffSeconds = Math.floor(diffMilliseconds / 1000); // Différence en secondes
+              
+              // Vérification si la fréquence est toutes les 30 secondes
+              if (prescription.frequence == "Toutes les 30 secondes" && diffSeconds % 30 === 0) {
+                // Envoi de la notification
+                await webPush.sendNotification(req.body.webpushtoken, JSON.stringify(payload));
+                      
+                const updatedNotification = await db.collection('notifications').findOneAndUpdate(
+                  { _id: notification._id },  // Critère pour trouver la notification
+                  {
+                    $set: {
+                      dateNotification: currentTime
+                    }
+                  },
+                  { returnDocument: 'after' } // Retourne le document après mise à jour
+                );
+              
+                // Vérifier si la notification a bien été mise à jour
+                if (updatedNotification) {
+                  console.log(updatedNotification);
+                  return res.status(200).json({ message: 'Notification envoyée avec succès', updatedNotification });
+                } else {
+                  return res.status(404).json({ message: 'Notification non trouvée' });
+                }
+              }
+              
+              
+      }
+     
     }
 
  

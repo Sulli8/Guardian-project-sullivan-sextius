@@ -16,8 +16,22 @@ export class ListDrugsComponent implements OnInit {
 
   constructor(private apiService: ApiService) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    this.callCheckNotify();
+    // Répéter l'appel toutes les 10 secondes
+    setInterval(() => {
+      this.callCheckNotify();
+    }, 10000);
     this.getMedications();
+  }
+  
+  async callCheckNotify() {
+    try {
+      const response = await this.apiService.checkNotify(); // Convertir l'Observable en Promise
+      console.log('Réponse de check-notify', response);
+    } catch (error) {
+      console.error('Erreur lors de l\'appel à check-notify', error);
+    }
   }
 
   getMedications(): void {

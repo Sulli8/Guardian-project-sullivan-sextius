@@ -5,6 +5,6 @@
     "audience": "http://localhost:3001"
   },
   "apiUri": "http://localhost:3001",
-  "appUri": "http://localhost:4200",
+  "appUri": "http://localhost:8080",
   "errorPath": "/error"
 }
