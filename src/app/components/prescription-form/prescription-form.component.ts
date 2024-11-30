@@ -18,6 +18,16 @@ import { Router } from '@angular/router';
 export class PrescriptionFormComponent implements OnInit {
   prescriptionForm: FormGroup;
   medications:Medication[];
+  stepData: { key: string, value: any }[] = [
+    { key: 'nom', value: '' },
+    { key: 'traitement', value: '' },
+    { key: 'frequence', value: '' },
+    { key: 'medicament', value: '' },
+    { key: 'dosage', value: '' },
+    { key: 'prescriptionDate', value: '' },
+    { key: 'prescriptionTime', value: '' }
+  ];
+  currentStepIndex: number = 0; // Pour suivre l'étape actuelle
 
   constructor(private router:Router, private fb: FormBuilder, private apiService:ApiService) {
     this.prescriptionForm = this.fb.group({
@@ -47,6 +57,12 @@ export class PrescriptionFormComponent implements OnInit {
         console.error('Erreur lors de la récupération des médicaments :', err);
       }
     });
+  }
+
+  nextStep(): void {
+    if (this.currentStepIndex < 5) {
+      this.currentStepIndex++;
+    }
   }
   showSuccessAlert() {
     Swal.fire({

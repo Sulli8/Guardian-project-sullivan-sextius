@@ -1,10 +1,34 @@
 <app-nav-bar></app-nav-bar>
 <div class="container">
-    <h2>Add a prescription</h2>
     <form class="prescriptionForm" [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
-  
+      <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
+      <div class="form_group_1" *ngIf="currentStepIndex === 0">
+        <label class="name-treatment" for="Nom-treatement">Nom du traitement</label>
+        <input
+        type="text"
+        class="form-control"
+        placeholder="Ajouter le nom de la prescription" />
+        <button (click)="nextStep()" type="button" class="next-step">Suivant</button>
+      </div>
+    <!-- Fréquence -->
+    <div class="form-group" *ngIf="currentStepIndex === 1" >
+      <label for="frequence">Récurrence</label>
+        <select class="select-form" formControlName="frequence">
+          <option value="1 fois par jour">1 fois par jour</option>
+          <option value="2 fois par jour">2 fois par jour</option>
+          <option value="Toutes les 30 secondes">Toutes les 30 secondes</option>
+          <option value="Toutes les 10 minutes">Toutes les 10 minutes</option>
+          <option value="Toutes les 4 heures">Toutes les 4 heures</option>
+          <option value="Toutes les 8 heures">Toutes les 8 heures</option>
+          <option value="Toutes les 12 heures">Toutes les 12 heures</option>
+        </select>
+        <div *ngIf="prescriptionForm.get('frequence')?.invalid && prescriptionForm.get('frequence')?.touched" class="text-danger">
+          La fréquence est requise.
+        </div>
+        <button class="next-step" type="button"  (click)="nextStep()">Suivant</button>
+    </div>
       <!-- Liste des médicaments -->
-      <div class="form-group">
+      <div class="form-group" *ngIf="currentStepIndex === 2" >
         <label for="medicationId">Medication</label>
         <select id="medicationId" class="select-form form-control" formControlName="medicationId">
           <option value="" disabled selected>Select a medication</option>
@@ -15,10 +39,11 @@
         <div *ngIf="prescriptionForm.get('medicationId')?.invalid && prescriptionForm.get('medicationId')?.touched" class="text-danger">
           Vous devez sélectionner un médicament.
         </div>
+        <button class="next-step" type="button"  (click)="nextStep()">Suivant</button>
       </div>
     
       <!-- Dosage -->
-      <div class="form-group">
+      <div class="form-group" *ngIf="currentStepIndex === 3" >
         <label for="dosage">Dosage</label>
         <input
           id="dosage"
@@ -30,9 +55,10 @@
         <div *ngIf="prescriptionForm.get('dosage')?.invalid && prescriptionForm.get('dosage')?.touched" class="text-danger">
           Le dosage est requis.
         </div>
+        <button class="next-step" type="button"  (click)="nextStep()">Suivant</button>
       </div>
   <!-- Date de prescription -->
-  <div class="form-group">
+  <div class="form-group" *ngIf="currentStepIndex === 4" >
     <label for="datePrescribed">Date de prescription</label>
     <input
       id="datePrescribed"
@@ -44,10 +70,11 @@
     <div *ngIf="prescriptionForm.get('datePrescribed')?.invalid && prescriptionForm.get('datePrescribed')?.touched" class="text-danger">
       La date est requise.
     </div>
+    <button class="next-step" type="button"  (click)="nextStep()">Suivant</button>
   </div>
 
   <!-- Heure de prescription -->
-  <div class="form-group">
+  <div class="form-group" *ngIf="currentStepIndex === 5">
     <label for="timePrescribed">Heure de prescription</label>
     <input
       id="timePrescribed"
@@ -59,26 +86,12 @@
     <div *ngIf="prescriptionForm.get('timePrescribed')?.invalid && prescriptionForm.get('timePrescribed')?.touched" class="text-danger">
       L'heure est requise.
     </div>
+    <button class="next-step" type="button"  (click)="nextStep()">Suivant</button>
   </div>
-      <!-- Fréquence -->
-      <div class="form-group">
-        <label for="frequence">Fréquence</label>
-          <select formControlName="frequence">
-            <option value="1 fois par jour">1 fois par jour</option>
-            <option value="2 fois par jour">2 fois par jour</option>
-            <option value="Toutes les 30 secondes">Toutes les 30 secondes</option>
-            <option value="Toutes les 10 minutes">Toutes les 10 minutes</option>
-            <option value="Toutes les 4 heures">Toutes les 4 heures</option>
-            <option value="Toutes les 8 heures">Toutes les 8 heures</option>
-            <option value="Toutes les 12 heures">Toutes les 12 heures</option>
-          </select>
-          <div *ngIf="prescriptionForm.get('frequence')?.invalid && prescriptionForm.get('frequence')?.touched" class="text-danger">
-            La fréquence est requise.
-          </div>
-      </div>
-  
+    
+
       <!-- Bouton de soumission -->
-      <button type="submit" class="input-submit btn btn-primary" [disabled]="prescriptionForm.invalid">
+      <button *ngIf="currentStepIndex === 6" type="submit" class="input-submit btn btn-primary" [disabled]="prescriptionForm.invalid">
         Soumettre
       </button>
     </form>

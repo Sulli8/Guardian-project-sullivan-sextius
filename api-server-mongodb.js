@@ -609,7 +609,7 @@ app.post('/api/check-subscribed-notify', checkJwt, async (req, res) => {
 
             if (increment) {
              
-              return res.status(200).json({ message: 'Nombre de Notification remis à zéro ', updatedNotification });
+              return res.status(200).json({ message: 'Nombre de Notification remis à zéro ' });
             } 
           }
 
