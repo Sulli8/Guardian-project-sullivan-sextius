@@ -60,9 +60,34 @@ export class PrescriptionFormComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.currentStepIndex < 5) {
+    if (this.currentStepIndex < 6) {
       this.currentStepIndex++;
     }
+  
+    if (this.currentStepIndex === 6) {
+      // Afficher un SweetAlert de confirmation avant de valider
+      Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Êtes-vous sûr de vouloir valider le formulaire ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, valider',
+        cancelButtonText: 'Non, revenir en arrière',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Code pour valider le formulaire ou effectuer l'action finale
+          this.onSubmit(); // Exemple de méthode pour soumettre le formulaire
+        } else {
+          // Si l'utilisateur annule, revenir en arrière (ne pas incrémenter l'index)
+          this.currentStepIndex--;
+        }
+      });
+    }
+  }
+
+
+  previousStep(){
+    this.currentStepIndex--;
   }
   showSuccessAlert() {
     Swal.fire({

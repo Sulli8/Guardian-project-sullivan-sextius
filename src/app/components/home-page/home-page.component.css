@@ -1,12 +1,12 @@
 /* home-page.component.css */
-
+:host {
+  width: 96%;
+}
 .home-page-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-  
   }
   
   h1 {
@@ -32,6 +32,61 @@
   button:hover {
     background-color: #4285f4;
     color: white;
+  }
+.add-treatment {
+  margin-top: 80px;
+  background-color: #4285f4;
+  color: white;
+  font-weight: bold;
+  width: 600px;
+  padding: 10px;
+}
+  .home-page-container {
+   
+  }
+
+  .icon-label-treatement {
+    height: 50px;
+    width: 50px;
+  }
+  .title-treatment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 50px;
+    max-width: 500px;
+  }
+
+  .icon-treatment-1 {
+    height: 150px;
+  width: 250px;
+  }
+
+  .home-page-container {
+    background-color:#2C2C2E ;
+    min-height: 80vh;
+    width: 100%;
+  }
+  @media (max-width: 1000px) {
+    .title-treatment {
+      max-width: 500px;
+    }
+    
+  }
+  @media (max-width: 600px) {
+    .title-treatment {
+      width: 100%;
+    }
+
+  }
+  .settings-treatment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+
   }
   
   .btn-view-prescriptions, .btn-add-prescriptions {

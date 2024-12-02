@@ -1,9 +1,16 @@
 <app-nav-bar></app-nav-bar>
 <div class="container">
     <form class="prescriptionForm" [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
-      <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
       <div class="form_group_1" *ngIf="currentStepIndex === 0">
-        <label class="name-treatment" for="Nom-treatement">Nom du traitement</label>
+
+        <div class="container-labal-svg">
+          <svg (click)="previousStep()" *ngIf="currentStepIndex > 0" fill="#fff" height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 476.213 476.213" xml:space="preserve">
+            <polygon points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5   57.427,253.107 476.213,253.107 "/>
+            </svg>
+          <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
+          <label class="name-treatment" for="Nom-treatement">Nom du traitement</label>
+        </div>
+       
         <input
         type="text"
         class="form-control"
@@ -12,7 +19,13 @@
       </div>
     <!-- Fréquence -->
     <div class="form-group" *ngIf="currentStepIndex === 1" >
+      <div class="container-labal-svg">
+      <svg (click)="previousStep()" *ngIf="currentStepIndex > 0" fill="#fff" height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 476.213 476.213" xml:space="preserve">
+        <polygon points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5   57.427,253.107 476.213,253.107 "/>
+        </svg>
+      <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
       <label for="frequence">Récurrence</label>
+     </div>
         <select class="select-form" formControlName="frequence">
           <option value="1 fois par jour">1 fois par jour</option>
           <option value="2 fois par jour">2 fois par jour</option>
@@ -29,7 +42,13 @@
     </div>
       <!-- Liste des médicaments -->
       <div class="form-group" *ngIf="currentStepIndex === 2" >
+        <div class="container-labal-svg">
+        <svg (click)="previousStep()" *ngIf="currentStepIndex > 0" fill="#fff" height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 476.213 476.213" xml:space="preserve">
+          <polygon points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5   57.427,253.107 476.213,253.107 "/>
+          </svg>
+        <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
         <label for="medicationId">Medication</label>
+        </div>
         <select id="medicationId" class="select-form form-control" formControlName="medicationId">
           <option value="" disabled selected>Select a medication</option>
           <option *ngFor="let medication of medications" [value]="medication._id">
@@ -44,7 +63,13 @@
     
       <!-- Dosage -->
       <div class="form-group" *ngIf="currentStepIndex === 3" >
+        <div class="container-labal-svg">
+        <svg (click)="previousStep()" *ngIf="currentStepIndex > 0" fill="#fff" height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 476.213 476.213" xml:space="preserve">
+          <polygon points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5   57.427,253.107 476.213,253.107 "/>
+          </svg>
+        <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
         <label for="dosage">Dosage</label>
+        </div>
         <input
           id="dosage"
           type="text"
@@ -59,7 +84,14 @@
       </div>
   <!-- Date de prescription -->
   <div class="form-group" *ngIf="currentStepIndex === 4" >
+    <div class="container-labal-svg">
+    <svg (click)="previousStep()" *ngIf="currentStepIndex > 0" fill="#fff" height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 476.213 476.213" xml:space="preserve">
+      <polygon points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5   57.427,253.107 476.213,253.107 "/>
+      </svg>
+    <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
     <label for="datePrescribed">Date de prescription</label>
+    </div>
+   
     <input
       id="datePrescribed"
       type="date"
@@ -75,7 +107,13 @@
 
   <!-- Heure de prescription -->
   <div class="form-group" *ngIf="currentStepIndex === 5">
+    <div class="container-labal-svg">
+    <svg (click)="previousStep()" *ngIf="currentStepIndex > 0" fill="#fff" height="30px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 476.213 476.213" xml:space="preserve">
+      <polygon points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5   57.427,253.107 476.213,253.107 "/>
+      </svg>
+    <img class="icon-treatment-1" src="../../../assets/icons/icon-treatment-1.png"/>
     <label for="timePrescribed">Heure de prescription</label>
+  </div>
     <input
       id="timePrescribed"
       type="time"
@@ -87,12 +125,9 @@
       L'heure est requise.
     </div>
     <button class="next-step" type="button"  (click)="nextStep()">Suivant</button>
+  
   </div>
-    
-
       <!-- Bouton de soumission -->
-      <button *ngIf="currentStepIndex === 6" type="submit" class="input-submit btn btn-primary" [disabled]="prescriptionForm.invalid">
-        Soumettre
-      </button>
+    
     </form>
 </div>

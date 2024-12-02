@@ -3,48 +3,62 @@ app-nav-bar {
     margin-bottom: 20px; /* Espace sous la barre de navigation */
   }
   
-  /* Style global du tableau */
-  .table {
-    width: 100%;
-    border-collapse: collapse; /* Évite les espaces entre les cellules */
-    margin-top: 20px; /* Espace au-dessus du tableau */
+  .container-drugs {
+    display: flex;
+    flex-wrap: wrap; /* Permet aux éléments de se déplacer sur une nouvelle ligne */
+    justify-content: space-between; /* Espace entre les éléments */
+    gap: 20px; /* Espacement entre les éléments */
   }
   
-  /* Style pour l'en-tête du tableau */
-  .table thead {
-    background-color: #007bff; /* Couleur de fond bleu pour l'en-tête */
-    color: white; /* Texte en blanc */
+  .drug-item {
+    width: 30%; /* Par défaut, 4 éléments par ligne */
+    box-sizing: border-box; /* Assure que le padding/margin ne dépasse pas la largeur */
   }
   
-  .table th {
+  .img-drugs {
+    width: 100%; /* L'image occupe toute la largeur de son conteneur */
+    height: auto;
+    display: block;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  
+  .medicament-details {
     padding: 10px;
-    text-align: left;
-    font-size: 16px;
+    margin-top: 10px;
   }
   
-  .table td {
-    padding: 10px;
-    text-align: left;
-    font-size: 14px;
+  /* Media Query pour écrans moyens (moins de 1200px) */
+  @media (max-width: 1200px) {
+    .drug-item {
+      width: 48%; /* 2 éléments par ligne */
+    }
   }
   
-  /* Style pour chaque ligne du tableau */
-  .table tbody tr:nth-child(even) {
-    background-color: #f2f2f2; /* Couleur de fond pour les lignes paires */
+  /* Media Query pour écrans petits (moins de 768px) */
+  @media (max-width: 768px) {
+    .drug-item {
+      width: 100%; /* 1 élément par ligne */
+    }
   }
   
-  .table tbody tr:hover {
-    background-color: #e9ecef; /* Fond gris clair au survol */
+  .img-drugs {
+    width: 100px;
+    height: 100px;
   }
-  
-  /* Style pour les bordures du tableau */
-  .table, .table th, .table td {
-    border: 1px solid #ddd; /* Bordures légères */
+
+  .id-drug {
+    color: #4285F4;
   }
-  
-  /* Style des cellules */
-  .table td, .table th {
-    text-align: center; /* Centrer le texte dans chaque cellule */
+  .drugs {
+    display: flex;
+    justify-content: left;
+    font-weight: 100;
+    background-color: #2C2C2E;
+    height: 100px;
+    width: 340px;
+    border-radius: 10px;
+    color: #fff;
   }
   
   /* Style de la table pour les petits écrans */

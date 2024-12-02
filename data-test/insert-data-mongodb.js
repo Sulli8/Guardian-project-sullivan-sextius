@@ -47,12 +47,28 @@ async function insertData() {
 
     // Étape 2: Insérer des médicaments
     const medicaments = await Medicament.insertMany([
-      { name: 'Paracetamol', dosage: '500 mg', description: 'Médicament contre la douleur' },
-      { name: 'Ibuprofen', dosage: '200 mg', description: 'Médicament anti-inflammatoire' },
-      { name: 'Aspirin', dosage: '300 mg', description: 'Antidouleur et anti-inflammatoire' }
+      { 
+        name: 'Paracetamol', 
+        dosage: '500 mg', 
+        description: 'Médicament contre la douleur', 
+        type: 'comprime' 
+      },
+      { 
+        name: 'Ibuprofen', 
+        dosage: '200 mg', 
+        description: 'Médicament anti-inflammatoire', 
+        type: 'gellule' 
+      },
+      { 
+        name: 'Aspirin', 
+        dosage: '300 mg', 
+        description: 'Antidouleur et anti-inflammatoire', 
+        type: 'topique' 
+      }
     ]);
+    
     console.log('Médicaments insérés avec succès');
-
+    
    
     // Étape 3: Insérer des prescriptions
     const prescriptions = await Prescription.insertMany([

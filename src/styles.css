@@ -1,12 +1,15 @@
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #0D0C14;
-    font-family: "Poppins", serif;
+    background-color: #000;
     font-weight: bold;
     font-style: normal;
     color: #fff;
+    height: 100%;
+    width: 100%; 
+    overflow: hidden;
     
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body { font-family: Roboto, "Helvetica Neue", sans-serif; }

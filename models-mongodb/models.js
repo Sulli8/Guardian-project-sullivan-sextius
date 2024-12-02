@@ -14,9 +14,16 @@ const User = mongoose.model('Users', userSchema);  // Collection name in plural 
 const medicamentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   dosage: { type: String, required: true },
-  description: { type: String }
+  description: { type: String },
+  type: { 
+    type: String, 
+    required: true,  // Le champ type est obligatoire
+    enum: ['comprime', 'topique', 'gellule']  // Restreindre les valeurs possibles
+  }
 });
-const Medicament = mongoose.model('Medicaments', medicamentSchema);  // Collection name in plural form
+
+const Medicament = mongoose.model('Medicament', medicamentSchema);  // Collection name in singular form
+
 
 // Schema for Prescriptions
 const PrescriptionSchema = new mongoose.Schema({
