@@ -47,26 +47,29 @@ async function insertData() {
 
     // Étape 2: Insérer des médicaments
     const medicaments = await Medicament.insertMany([
-      { 
-        name: 'Paracetamol', 
-        dosage: '500 mg', 
-        description: 'Médicament contre la douleur', 
-        type: 'comprime' 
-      },
-      { 
-        name: 'Ibuprofen', 
-        dosage: '200 mg', 
-        description: 'Médicament anti-inflammatoire', 
-        type: 'gellule' 
-      },
-      { 
-        name: 'Aspirin', 
-        dosage: '300 mg', 
-        description: 'Antidouleur et anti-inflammatoire', 
-        type: 'topique' 
-      }
+      { name: 'Paracetamol', dosage: '500 mg', description: 'Médicament contre la douleur', type: 'comprime' },
+      { name: 'Ibuprofen', dosage: '200 mg', description: 'Médicament anti-inflammatoire', type: 'gellule' },
+      { name: 'Aspirin', dosage: '300 mg', description: 'Antidouleur et anti-inflammatoire', type: 'topique' },
+      { name: 'Amoxicilline', dosage: '250 mg', description: 'Antibiotique pour infections', type: 'comprime' },
+      { name: 'Paracétamol 1000mg', dosage: '1000 mg', description: 'Analgésique puissant', type: 'comprime' },
+      { name: 'Ibuprofen Extra', dosage: '400 mg', description: 'Anti-inflammatoire et antalgique', type: 'gellule' },
+      { name: 'Naproxène', dosage: '250 mg', description: 'Antidouleur et anti-inflammatoire', type: 'gellule' },
+      { name: 'Prednisone', dosage: '5 mg', description: 'Corticostéroïde anti-inflammatoire', type: 'comprime' },
+      { name: 'Diazépam', dosage: '10 mg', description: 'Anxiolytique et sédatif', type: 'comprime' },
+      { name: 'Loratadine', dosage: '10 mg', description: 'Antihistaminique contre les allergies', type: 'comprime' },
+      { name: 'Cétirizine', dosage: '10 mg', description: 'Antihistaminique contre les allergies', type: 'comprime' },
+      { name: 'Omeprazole', dosage: '20 mg', description: 'Antiacide pour les brûlures d’estomac', type: 'gellule' },
+      { name: 'Metformine', dosage: '500 mg', description: 'Médicament pour le diabète', type: 'comprime' },
+      { name: 'Fluconazole', dosage: '150 mg', description: 'Antifongique pour infections', type: 'comprime' },
+      { name: 'Ciprofloxacine', dosage: '500 mg', description: 'Antibiotique pour infections bactériennes', type: 'gellule' },
+      { name: 'Lisinopril', dosage: '10 mg', description: 'Antihypertenseur', type: 'comprime' },
+      { name: 'Paroxétine', dosage: '20 mg', description: 'Antidépresseur', type: 'comprime' },
+      { name: 'Vitamines C', dosage: '500 mg', description: 'Supplément vitaminique', type: 'gellule' },
+      { name: 'Ibuprofène Suspension', dosage: '200 mg', description: 'Suspension buvable anti-inflammatoire', type: 'gellule' },
+      { name: 'Acide Ascorbique', dosage: '1000 mg', description: 'Vitamine C en comprimé', type: 'comprime' }
     ]);
     
+
     console.log('Médicaments insérés avec succès');
     
    

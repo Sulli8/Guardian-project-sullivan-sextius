@@ -16,9 +16,11 @@ export class ApiService {
   private relanceIntervalId: any = null;
   PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
   notification_data: any;
-  constructor(readonly swPush: SwPush,private router: Router,private http: HttpClient) {
+  constructor(readonly swPush: SwPush,private router: Router,private http: HttpClient) {}
 
-   
+ 
+  getNotifications():Observable<any>{
+    return this.http.get(`${config.apiUri}/api/get-notifications`);
   }
 
   handleRedirection(valeur: boolean): void {

@@ -23,6 +23,25 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   constructor(readonly swPush: SwPush, private api: ApiService) {
   
   }
+  notifications: any[] = []; // Tableau pour stocker les médicaments
+  hrefPrescription(url:String){
+    console.log(url)
+  }
+  getNotifications(){
+    this.api.getNotifications().subscribe(
+      (data) => {
+        console.log(data)
+        this.notifications = data.notifications;  // Affecter les médicaments récupérés
+     
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des médicaments:', error);
+      }
+    );
+  }
+
+
+
 
   ngOnInit(): void {
     // Vérification de l'état de la permission des notifications
@@ -41,7 +60,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         }
       });
     }
-    this.checkIsSubscribed();  // Vérifier si l'utilisateur est abonné dès que le composant est initialisé
+    this.checkIsSubscribed();
+    this.getNotifications()
   }
 
   /**

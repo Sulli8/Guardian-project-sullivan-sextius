@@ -1,20 +1,52 @@
 <app-nav-bar></app-nav-bar>
 <div class="notifications-container">
-  <p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
+  <div class="sidebar-notifications">
+    <div class="title">Vos notifications - Nb notifications</div>
+    <p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
+    <div class="buttons-container">
+      <button [disabled]="NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">
+        Souscrire aux notifications
+      </button>
+      <!-- Si l'utilisateur est abonné, afficher le bouton de désabonnement -->
+      <button *ngIf="NotifsAllowed" (click)="unsubscribeFromPush()" class="button is-danger">
+        Se désabonner des notifications
+      </button>
 
-  <div class="buttons-container">
-    <button [disabled]="NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">
-      Souscrire aux notifications
-    </button>
-
-    <!-- Si l'utilisateur est abonné, afficher le bouton de désabonnement -->
-    <button *ngIf="NotifsAllowed" (click)="unsubscribeFromPush()" class="button is-danger">
-      Se désabonner des notifications
-    </button>
-
-    <div *ngIf="NotifsAllowed" class="buttons-container-child">
-      <button class="button is-primary">Exporter mes données</button>
-      <button class="button is-primary">Supprimer mes données</button>
+      <div *ngIf="NotifsAllowed" class="buttons-container-child">
+        <button class="button is-primary">Exporter mes données</button>
+        <button class="button is-primary">Supprimer mes données</button>
+      </div>
     </div>
+  </div>
+
+  <div class="container-box">
+    <div class="profile">
+      <img src="" alt="photo-profile"/>
+      <div class="data-profile">
+        <div>Nom</div>
+        <div>Prénom</div>
+        <div>Mail-user</div>
+      </div>
+    </div>
+    <div class="container-list-notification">
+      <div *ngFor="let notification of notifications" class="drug-item">
+        <div class="drugs">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+
+            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#f1c40f" stroke="none">
+            <path d="M2476 4546 c-49 -18 -113 -79 -137 -131 -10 -22 -19 -63 -19 -91 0 -27 -6 -58 -12 -67 -7 -9 -56 -30 -108 -47 -390 -127 -632 -466 -715 -1000 -8 -58 -20 -229 -25 -380 -12 -362 -32 -512 -90 -689 -54 -165 -122 -274 -280 -445 -109 -119 -124 -144 -124 -217 -1 -71 39 -142 99 -173 l40 -21 1461 0 1460 0 41 27 c51 33 81 82 89 142 11 75 -13 119 -145 266 -265 296 -329 500 -351 1130 -6 198 -15 310 -30 399 -54 311 -163 550 -329 725 -114 118 -223 185 -391 240 l-95 31 -12 79 c-15 98 -50 159 -115 199 -57 36 -151 46 -212 23z"/>
+            <path d="M2083 1018 c25 -315 264 -502 573 -449 217 38 355 202 380 451 l7 70 -483 0 -483 0 6 -72z"/>
+            </g>
+            </svg>
+          <div class="medicament-details">
+            <div>{{ notification.title }}</div>
+            <div>{{ notification.body }}</div>
+            <div class="id-drug">{{ notification.dateNotification }}</div>
+            <a (click)="hrefPrescription(notification.url)">Cliquez ici pour voir la prescription</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-export-pdf">Export de données au format pdf</button>
   </div>
 </div>

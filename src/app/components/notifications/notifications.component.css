@@ -1,14 +1,141 @@
+/*Grid notifications*/
+
+
+.container-drugs {
+  display: flex;
+  flex-wrap: wrap; /* Permet aux éléments de se déplacer sur une nouvelle ligne */
+  justify-content: space-between; /* Espace entre les éléments */
+  gap: 20px; /* Espacement entre les éléments */
+  height: 90vh; /* Hauteur maximale du conteneur (ajustable) */
+}
+
+.drug-item {
+  box-sizing: border-box; /* Assure que le padding/margin ne dépasse pas la largeur */
+}
+
+.img-drugs {
+  width: 100%; /* L'image occupe toute la largeur de son conteneur */
+  height: auto;
+  display: block;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.medicament-details {
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Media Query pour écrans moyens (moins de 1200px) */
+@media (max-width: 1200px) {
+  .drug-item {
+    width: 48%; /* 2 éléments par ligne */
+  }
+}
+
+/* Media Query pour écrans petits (moins de 768px) */
+@media (max-width: 768px) {
+  .container-drugs {
+    justify-content: center;
+  }
+  .drugs {
+    width: 100%;
+  }
+  .drug-item {
+    width: 100%; /* 1 élément par ligne */
+  }
+}
+
+.img-drugs {
+  width: 100px;
+  height: 100px;
+}
+
+.id-drug {
+  color: #4285F4;
+}
+
+.drugs > svg {
+  width: 30%;
+}
+.drugs {
+  display: flex;
+  justify-content: left;
+  font-weight: 100;
+  background-color: #2C2C2E;
+  width: 340px;
+  border-radius: 10px;
+  color: #fff;
+  align-items: center;
+}
+
 /* home-page.component.css */
 
 .notifications-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     height: 100vh;
-    background-color: #f4f4f9;
+    background-color: #000;
+    gap:20px;
   }
-  
+
+  .title {
+    font-size: 30px;
+    font-weight: 600;
+  }
+.buttons-container {
+  margin-top: 10px;
+}
+  .title-count-notifications {
+    color: #4285f4;
+  }
+  .sidebar-notifications {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    background-color: #2C2C2E;
+    color: #fff;
+    width: 30%;
+    padding: 10px;
+    border-radius:5px;
+  }
+
+  .sidebar-notifications > button {
+    width: 100%;
+    background-color: #4285f4;
+    color:#fff;
+    border-radius: 5px;
+
+  }
+
+  .profile {
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+    gap:50px;
+  }
+
+   .container-list-notification {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .container-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 90vh;
+    width: 70%;
+  }
+  .btn-export-pdf {
+    color: #4285f4;
+  }
+
+
   h1 {
     font-family: 'Arial', sans-serif;
     font-size: 36px;
@@ -20,9 +147,7 @@
     flex-direction: column;
     gap: 20px;
   }
-  .buttons-container {
-    width: 50%;
-  }
+
   button {
     padding: 10px 20px;
     font-size: 16px;
@@ -54,10 +179,33 @@
       align-items: center; /* Centre les boutons dans le conteneur */
       gap: 10px; /* Ajoute un espace entre les boutons */
     }
-  
+    .sidebar-notifications {
+      height: 300px;
+    }
+    .container-list-notification {
+      overflow-y: scroll;
+      height: 100vh;
+      overflow-y: scroll;
+      height: 300px;
+      overflow-x: hidden;
+    }
+    .container-box {
+      width: 100%;
+    }
+    .notifications-container {
+      flex-direction: column;
+    }
+
+    .sidebar-notifications {
+      width: 100%;
+    }
     .buttons-container button {
       width: 100%; /* Les boutons prennent toute la largeur */
       font-size: 1rem; /* Ajuste la taille du texte */
+    }
+
+    .buttons-container-child {
+      width: 100%;
     }
   }
   

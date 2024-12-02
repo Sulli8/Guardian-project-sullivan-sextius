@@ -523,7 +523,18 @@ app.put('/api/subscription', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur lors de la création du WebPushToken ou de l\'envoi de la notification.' });
   }
 });
-
+app.get('/api/get-notifications', checkJwt, async (req, res) => {
+  try {
+    // Recherche des notifications dans la base de données
+    const notifications = await db.collection("notifications").find().toArray(); // Tu peux ajouter des filtres ici si besoin
+    // Retourner les notifications trouvées en JSON
+    console.log(notifications)
+    res.status(200).json({message:"Notification recupérer avec succès",notifications});
+  } catch (error) {
+    console.error('Erreur lors de la récupération des notifications:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
 
 app.post('/api/check-subscribed-notify', checkJwt, async (req, res) => {
   webPush.setVapidDetails(

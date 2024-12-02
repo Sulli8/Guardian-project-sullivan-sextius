@@ -8,6 +8,9 @@ app-nav-bar {
     flex-wrap: wrap; /* Permet aux éléments de se déplacer sur une nouvelle ligne */
     justify-content: space-between; /* Espace entre les éléments */
     gap: 20px; /* Espacement entre les éléments */
+    height: 90vh; /* Hauteur maximale du conteneur (ajustable) */
+    overflow-y: auto; /* Ajoute un défilement vertical si nécessaire */
+    overflow-x: hidden; /* Empêche le défilement horizontal */
   }
   
   .drug-item {
@@ -37,6 +40,12 @@ app-nav-bar {
   
   /* Media Query pour écrans petits (moins de 768px) */
   @media (max-width: 768px) {
+    .container-drugs {
+      justify-content: center;
+    }
+    .drugs {
+      width: 100%;
+    }
     .drug-item {
       width: 100%; /* 1 élément par ligne */
     }
@@ -63,12 +72,5 @@ app-nav-bar {
   
   /* Style de la table pour les petits écrans */
   @media (max-width: 768px) {
-    .table thead {
-      font-size: 14px;
-    }
-    .table td, .table th {
-      font-size: 12px;
-      padding: 8px;
-    }
   }
   
