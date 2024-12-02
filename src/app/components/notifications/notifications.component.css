@@ -83,7 +83,12 @@
 
   .title {
     font-size: 30px;
-    font-weight: 600;
+    font-weight: 200;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
   }
 .buttons-container {
   margin-top: 10px;
@@ -122,6 +127,7 @@
     flex-wrap: wrap;
     gap: 20px;
     width: 100%;
+    height: 54%;
   }
 
   .container-box {
@@ -179,14 +185,8 @@
       align-items: center; /* Centre les boutons dans le conteneur */
       gap: 10px; /* Ajoute un espace entre les boutons */
     }
-    .sidebar-notifications {
-      height: 300px;
-    }
     .container-list-notification {
       overflow-y: scroll;
-      height: 100vh;
-      overflow-y: scroll;
-      height: 300px;
       overflow-x: hidden;
     }
     .container-box {
@@ -195,6 +195,9 @@
     .notifications-container {
       flex-direction: column;
     }
+    .container-box {
+      gap:0;
+    }
 
     .sidebar-notifications {
       width: 100%;
@@ -202,10 +205,24 @@
     .buttons-container button {
       width: 100%; /* Les boutons prennent toute la largeur */
       font-size: 1rem; /* Ajuste la taille du texte */
+  
     }
+    .drugs {
+      width: 100%
+    }
+    
 
     .buttons-container-child {
       width: 100%;
     }
+
+    
   }
-  
+  .data-profile {
+    width: 100%;
+  }
+  .profile {
+    height: 60px;
+    padding: 10px;
+    align-items: center;
+  }
