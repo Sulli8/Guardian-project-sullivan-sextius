@@ -18,10 +18,48 @@ export class HomePageComponent {
   faPlus = faPlus;
   hasAnswered: boolean = false;
   message: string = '';
+  prescriptions:any = [];
   constructor(private router: Router,private apiService:ApiService) {}
+  weekDays: string[] = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+  
+  // Date actuellement affichée
+  displayDate: Date = new Date();
+  // Change la date en fonction du défilement
+  onScroll(event: any): void {
+    const scrollLeft = event.target.scrollLeft;
+    const dayWidth = 100;  // Largeur approximative de chaque jour dans le carrousel
+    const dayIndex = Math.floor(scrollLeft / dayWidth);
+    
+    // Ajouter ou soustraire des jours en fonction du défilement
+    const newDate = new Date(this.displayDate);
+    newDate.setDate(this.displayDate.getDate() + dayIndex);
+    this.displayDate = newDate;
+  }
 
+  // Changer la date en augmentant ou diminuant
+  changeDate(offset: number): void {
+    const newDate = new Date(this.displayDate);
+    newDate.setDate(this.displayDate.getDate() + offset);
+    this.displayDate = newDate;
+  }
+  ngAfterViewInit(){
+  this.apiService.getPrescription().subscribe(
+    (response) => {
+     this.prescriptions = response.prescriptions
+     console.log(this.prescriptions)
+   },
+   (error) => {
+     console.error('Erreur lors de la vérification des réponses:', error);
+     this.message = 'Erreur lors de la vérification de vos réponses.';
+   }
+ )
+}
 
+exportToPDF(){
+  console.log("EXPORT PDF")
+}
   async ngOnInit() {
+    this.displayDate = new Date();
     // Appel initial de la méthode checkNotify
     this.callCheckNotify();
     // Répéter l'appel toutes les 10 secondes
@@ -40,6 +78,8 @@ export class HomePageComponent {
         this.message = 'Erreur lors de la vérification de vos réponses.';
       }
     );
+
+    
   }
   
   // Méthode pour appeler checkNotify

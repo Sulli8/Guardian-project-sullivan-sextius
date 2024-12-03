@@ -535,7 +535,30 @@ app.get('/api/get-notifications', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
+app.get('/api/get-prescriptions',checkJwt , async(req, res) => {
+  try {
+    const tokenFromJwt = req.auth.payload.sub; 
 
+    // Rechercher l'utilisateur dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+    // Récupérer toutes les prescriptions de cet utilisateur
+    const prescriptions = await db.collection("prescriptions").find({ userId: user._id }).toArray();
+
+    // Si aucune prescription n'est trouvée
+    if (!prescriptions || prescriptions.length === 0) {
+      return res.status(404).json({ message: 'Aucune prescription trouvée pour cet utilisateur.' });
+    }
+
+    // Retourner les prescriptions sous forme de réponse JSON
+    res.status(200).json({message:"Récupération des prescription avec succès", prescriptions});
+  } catch (error) {
+    console.error('Erreur lors de la récupération des prescriptions:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la récupération des prescriptions.' });
+  }
+});
 app.get('/api/get-user', checkJwt, async (req, res) => {
   try {
     const tokenFromJwt = req.auth.payload.sub;  // On suppose que le middleware de vérification de JWT a déjà rempli req.auth avec le payload du token

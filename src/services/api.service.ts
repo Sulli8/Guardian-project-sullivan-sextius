@@ -23,6 +23,10 @@ export class ApiService {
     return this.http.get(`${config.apiUri}/api/get-notifications`);
   }
 
+  getPrescription():Observable<any>{
+    return this.http.get(`${config.apiUri}/api/get-prescriptions`);
+  }
+
   getUser():Observable<any>{
     return this.http.get(`${config.apiUri}/api/get-user`);
   }

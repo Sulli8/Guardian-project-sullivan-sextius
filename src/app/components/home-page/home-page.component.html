@@ -1,33 +1,75 @@
 <app-nav-bar></app-nav-bar>
-<div class="container">
+
+<!-- Si prescriptions est vide (prescriptions.length == 0) -->
+<div class="container" *ngIf="prescriptions.length == 0">
   <div class="home-page-container">
-
-
     <div class="settings-treatment">
       <img class="icon-treatment-1" src="../../../assets/icons/icon-add-treatement-form-2.png"/>
-      <h1 >Configurer vos traitements</h1>
+      <h1>Configurer vos traitements</h1>
     </div>
-  
+
     <div class="title-treatment">
       <img class="icon-label-treatement" src="../../../assets/icons/icon-add-treatement-1.png"/>
       <p>Suivez la prise de tous vos traitements au même endroit.</p>
     </div>
-  
+
     <div class="title-treatment">
       <img class="icon-label-treatement" src="../../../assets/icons/icon-add-treatement-2.png"/>
       <p>Définissez un programme et recevez des rappels.</p>
     </div>
-  
-  
+
     <div class="title-treatment">
       <img class="icon-label-treatement" src="../../../assets/icons/icon-add-treatement-3.png"/>
-      <p>Les informations relatives à vos traitements sont chiffrées et ne pourront être lues par personne sans votre permission, pas même par Apple.</p>
+      <p>Les informations relatives à vos traitements sont chiffrées et ne pourront être lues.</p>
     </div>
-  
+
     <div class="title-treatment">
       <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
     </div>
+  </div>
 </div>
 
- 
-  
+<!-- Si prescriptions n'est pas vide (prescriptions.length > 0) -->
+<div *ngIf="prescriptions.length > 0" class="container-carroussel-parent">
+
+    <!-- Export au format PDF -->
+    <div class="container-parent-prescription-about">
+      <button class="add-treatment">Traitements au besoin</button>
+      <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
+      <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
+      <button class="add-treatment" (click)="exportToPDF()">Export au format PDF</button>
+    </div>
+
+    <div class="container-enregistrement">
+        <!-- Section pour enregistrer la prescription -->
+        <div class="enregistrement-prescription">
+          <h2>Enregistrer</h2>
+          <p class="status-prescription"></p>
+        </div>
+
+        <!-- Liste des prescriptions -->
+        <div class="container-parent-prescription">
+          <h2>Vos traitements / prescriptions</h2>
+          <div class="container-prescriptions">
+            <div class="prescription-item" *ngFor="let prescription of prescriptions">
+              <img [src]="prescription.image" alt="Image traitement"/>
+              <div class="dosage">Dosage {{ prescription.dosage }}</div>
+              <div class="recurrence">Date de prescription {{ prescription.timePrescribed }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Détails supplémentaires sur les traitements -->
+        <div class="container-parent-prescription-details">
+          <h2>A propos des données Traitement</h2>
+          <div class="container-details">
+            <img src="../../../assets/icons/data-info.png"/>
+            <h1>Suivi de vos traitements</h1>
+            <p>Découvrez en quoi il est important de suivre les traitement que vous prenez</p>
+          </div>
+        
+        </div>
+    </div>
+
+
+</div>
