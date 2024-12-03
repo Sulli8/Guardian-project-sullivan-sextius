@@ -2,37 +2,57 @@
 <div class="notifications-container">
   <div class="sidebar-notifications">
     <div class="title">Vos notifications - <p class="count-notification">{{notifications.length}}</p></div>
+    <div class="profile">
+      <div *ngFor="let u of user" class="data-profile">
+        <p>{{u.firstName}} - {{u.lastName | uppercase}}</p>
+        <p>{{u.email}}</p>
+      </div>
+    </div>
     <p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
     <div class="buttons-container">
-      <button [disabled]="NotifsAllowed" (click)="subscribeToPush()" class="button is-primary">
-        Souscrire aux notifications
+      <button [disabled]="NotifsAllowed" (click)="subscribeToPush()" class="button">
+        <div class="box-btn-child">
+          <p>Souscrire aux notifications</p>
+        </div>
+        <svg fill="#ffffff3e" height="15px" width="15px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330" xml:space="preserve">
+          <path id="XMLID_222_" d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+          </svg>
       </button>
       <!-- Si l'utilisateur est abonné, afficher le bouton de désabonnement -->
-      <button *ngIf="NotifsAllowed" (click)="unsubscribeFromPush()" class="button is-danger">
-        Se désabonner des notifications
+      <button *ngIf="NotifsAllowed" (click)="unsubscribeFromPush()" class="button">
+     
+        <div class="box-btn-child">
+          <p> Se désabonner des notifications</p>
+        </div>
+        <svg  fill="#ffffff3e" height="15px" width="15px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330" xml:space="preserve">
+          <path id="XMLID_222_" d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+          </svg>
       </button>
 
       <div *ngIf="NotifsAllowed" class="buttons-container-child">
-        <button class="button is-primary">Exporter mes données</button>
-        <button class="button is-primary">Supprimer mes données</button>
+        <button class="button">
+
+          <div class="box-btn-child">
+            <p> Exporter mes données</p>
+          </div>
+          <svg  fill="#ffffff3e" height="15px" width="15px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330" xml:space="preserve">
+            <path id="XMLID_222_" d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+            </svg>
+        </button>
+        <button class="button">
+          <div class="box-btn-child">
+            <p> Supprimer mes données</p>
+          </div>
+          <svg  fill="#ffffff3e" height="15px" width="15px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330" xml:space="preserve">
+            <path id="XMLID_222_" d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001  c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213  C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606  C255,161.018,253.42,157.202,250.606,154.389z"/>
+            </svg>
+          
+        </button>
       </div>
     </div>
   </div>
 
   <div class="container-box">
-    <div class="profile">
-      <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 920.000000 600.000000" preserveAspectRatio="xMidYMid meet">
-
-        <g transform="translate(0.000000,600.000000) scale(0.100000,-0.100000)" fill="#4285F4" stroke="none">
-        <path d="M4330 4723 c-535 -82 -996 -380 -1272 -825 -101 -163 -178 -357 -219 -558 -21 -99 -24 -143 -24 -320 0 -226 8 -287 62 -475 40 -141 144 -362 226 -478 269 -384 661 -641 1123 -736 509 -105 1062 14 1462 316 244 184 401 371 528 628 72 148 113 263 145 415 31 143 34 472 5 625 -140 750 -759 1317 -1546 1414 -117 15 -376 12 -490 -6z m570 -94 c552 -92 1017 -441 1255 -942 201 -423 200 -913 -2 -1347 -51 -111 -169 -290 -246 -375 l-54 -60 -28 55 c-59 116 -151 213 -271 285 -88 53 -145 71 -354 110 -107 20 -205 43 -220 52 -15 9 -39 34 -54 56 -24 38 -26 49 -26 159 0 108 2 120 25 154 30 44 68 160 86 262 10 60 17 75 34 82 17 7 27 25 40 77 10 37 31 110 47 162 33 109 33 135 -1 139 -23 4 -24 5 -17 75 3 40 9 146 12 237 6 140 4 174 -10 225 -23 78 -48 126 -85 161 -32 29 -231 124 -315 149 -101 30 -258 9 -392 -54 -59 -28 -205 -123 -252 -165 -32 -28 -60 -84 -73 -147 -10 -47 -1 -303 17 -436 4 -38 3 -42 -18 -45 -34 -5 -34 -41 1 -155 17 -54 37 -124 46 -155 8 -31 23 -63 33 -70 12 -9 26 -47 41 -113 26 -112 60 -202 90 -241 18 -23 21 -41 21 -133 0 -91 -3 -113 -22 -151 -37 -72 -62 -83 -279 -118 -163 -27 -205 -37 -264 -66 -77 -38 -153 -105 -205 -180 -37 -55 -79 -165 -80 -211 -1 -29 -3 -28 -71 45 -78 83 -192 246 -243 349 -188 374 -222 810 -95 1206 16 50 58 149 94 220 201 404 548 699 992 844 112 37 308 76 418 84 106 7 305 -4 425 -24z"/>
-        </g>
-        </svg>
-      <div class="data-profile">
-        <div>Nom</div>
-        <div>Prénom</div>
-        <div>Mail-user</div>
-      </div>
-    </div>
     <div class="container-list-notification">
       <div *ngFor="let notification of notifications" class="drug-item">
         <div class="drugs">
@@ -52,6 +72,5 @@
         </div>
       </div>
     </div>
-    <button class="btn-export-pdf">Export de données au format pdf</button>
   </div>
 </div>

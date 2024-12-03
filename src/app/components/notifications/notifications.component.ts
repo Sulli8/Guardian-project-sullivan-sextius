@@ -24,6 +24,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   
   }
   notifications: any[] = []; // Tableau pour stocker les médicaments
+  user: any[] = [];
   hrefPrescription(url:String){
     console.log(url)
   }
@@ -32,6 +33,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       (data) => {
         console.log(data)
         this.notifications = data.notifications;  // Affecter les médicaments récupérés
+     
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des médicaments:', error);
+      }
+    );
+  }
+
+  getUser(){
+    this.api.getUser().subscribe(
+      (data) => {
+        console.log(data)
+        this.user = data.user;  // Affecter les médicaments récupérés
      
       },
       (error) => {
@@ -62,6 +76,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
     this.checkIsSubscribed();
     this.getNotifications()
+    this.getUser();
   }
 
   /**

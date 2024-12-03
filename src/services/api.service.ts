@@ -23,6 +23,10 @@ export class ApiService {
     return this.http.get(`${config.apiUri}/api/get-notifications`);
   }
 
+  getUser():Observable<any>{
+    return this.http.get(`${config.apiUri}/api/get-user`);
+  }
+
   handleRedirection(valeur: boolean): void {
     
     if (valeur) {

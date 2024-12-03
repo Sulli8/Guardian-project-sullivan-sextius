@@ -536,6 +536,22 @@ app.get('/api/get-notifications', checkJwt, async (req, res) => {
   }
 });
 
+app.get('/api/get-user', checkJwt, async (req, res) => {
+  try {
+    const tokenFromJwt = req.auth.payload.sub;  // On suppose que le middleware de vérification de JWT a déjà rempli req.auth avec le payload du token
+
+    // Vérifier si l'utilisateur existe dans la base de données
+    const user = await db.collection('users').find({ token: tokenFromJwt }).toArray();
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({message:"Utilisateur recupérer avec succès",user});
+  } catch (error) {
+    console.error('Erreur lors de la récupération des utilisateurs:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 app.post('/api/check-subscribed-notify', checkJwt, async (req, res) => {
   webPush.setVapidDetails(
     'mailto:sullivan-sextius@gmail.com',  // L'email de votre serveur
