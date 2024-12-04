@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import config from '../../auth_config.json';
 import { Observable } from 'rxjs';
 import { Question } from 'src/models/question';
@@ -29,6 +29,12 @@ export class ApiService {
 
   getUser():Observable<any>{
     return this.http.get(`${config.apiUri}/api/get-user`);
+  }
+  exportPrescriptions(): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${config.apiUri}/api/export-pdf/prescriptions`, {
+      observe: 'response',
+      responseType: 'blob'  // L'API renvoie un fichier binaire (PDF)
+    });
   }
 
   handleRedirection(valeur: boolean): void {

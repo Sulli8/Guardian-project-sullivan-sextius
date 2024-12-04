@@ -1,6 +1,9 @@
 /* home-page.component.css */
 :host {
+  display: flex;
+  flex-direction: column;
   width: 96%;
+  height: 100vh;
 }
 .home-page-container {
     display: flex;
@@ -11,7 +14,6 @@
   
   h1 {
     font-size: 36px;
-    margin-bottom: 30px;
   }
   
   .buttons-container {
@@ -28,22 +30,20 @@
     border-radius: 5px;
     transition: all 0.3s ease;
   }
-  
-  button:hover {
-    background-color: #4285f4;
-    color: white;
-  }
+
 .add-treatment {
   margin-top: 80px;
-  background-color: #4285f4;
-  color: white;
-  font-weight: bold;
+  background-color: #2C2C2E;
+  color: #007bff;
+  font-weight: 100;
   width: 100%;
   padding: 10px;
 }
-  .home-page-container {
-   
-  }
+.add-treatment:hover {
+  transition: 0.2s;
+  color: #0055b0;
+}
+
 
   .icon-label-treatement {
     height: 50px;
@@ -137,7 +137,6 @@
 h1 {
   font-weight: 900;
   font-size: 32px;
-  margin-bottom: 50px;
 }
 
 .cards {
@@ -210,7 +209,6 @@ h1 {
   width: 100%;
   gap: 50px;
   height: 60vh;
-  padding: 20px;
 }
 
 .container-enregistrement {
@@ -218,10 +216,6 @@ h1 {
 }
 
 .container-parent-prescription-about {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: column;
   width: 30%;
 }
 
@@ -238,6 +232,7 @@ h1 {
   flex-direction: column;
   justify-content: left;
   align-items: left;
+  gap: 20px;
   width: 100%;
 }
 
@@ -253,14 +248,39 @@ h1 {
   justify-content: center;
   align-items: left;
   flex-direction: column;
+  background-color: #2C2C2E;
+  width: 400px;
+  margin-top: 50px;
+  border-radius:  8px;
+  cursor: pointer;
 }
 
-.container-details > h1 {
+.container-details > h1{
   font-weight: bold;
+  padding: 10px;
 }
+.container-details > p {
+  padding: 10px;
+}
+.img-drugs, .img-container {
+  height: 100px;
+  display: block;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.container-dosage-recurrence {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+
 .container-details > img {
   height: 200px;
-  width: 300px;
+  width: 100%;
+  border-radius: 8px;
 }
 
 .container-details > p {
@@ -269,14 +289,17 @@ h1 {
 .add-treatment {
   display: block;
   margin: auto;
+  margin-top: 50px;
   
 }
 .prescription-item {
-    background-color: #2C2C2E;
-    border-radius: 5px;
-    width: 50%;
-    height: 100px;
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  background-color: #2C2C2E;
+  border-radius: 5px;
+  font-weight: 100;
+  width: 400px;
+  height: 100px;
 }
 .enregistrement-prescription > button {
   width: 40%;
@@ -362,6 +385,9 @@ h1 {
 
 /* Responsive Design for Smaller Screens (768px and below) */
 @media (max-width: 768px) {
+  .container-parent-prescription > h2 {
+    margin-top: 20px;
+  }
   .container-details > img {
     height: 100%;
     width: 100%;
@@ -372,7 +398,9 @@ h1 {
     height: 100vh;
     overflow-y: scroll;
   }
-
+.prescription-item {
+  gap: 20px;
+}
   .container-enregistrement,.prescription-item ,.container-parent-prescription-about {
     width: 100%;
   }
@@ -384,11 +412,15 @@ h1 {
     padding: 20px;
   }
 }
-
+.container-parent-prescription-about {
+  height: 40vh;
+}
 /* Extra Small Screen Adjustments */
 @media (max-width: 480px) {
-  
-  .container-enregistrement, .container-parent-prescription-about, .prescription-item {
+  .container-parent-prescription > h2 {
+    margin-top: 20px;
+  }
+  .container-enregistrement, .container-parent-prescription-about, .prescription-item, .container-details {
     width: 100%;
   }
   .container-carroussel-parent  {
@@ -399,6 +431,7 @@ h1 {
   }
 
   h1 {
+    padding: 10px;
     font-size: 25px;
   }
 

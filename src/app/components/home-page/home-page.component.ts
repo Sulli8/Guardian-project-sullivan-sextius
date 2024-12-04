@@ -18,7 +18,8 @@ export class HomePageComponent {
   faPlus = faPlus;
   hasAnswered: boolean = false;
   message: string = '';
-  prescriptions:any = [];
+  prescriptions:any[] = [];
+
   constructor(private router: Router,private apiService:ApiService) {}
   weekDays: string[] = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
   
@@ -45,8 +46,8 @@ export class HomePageComponent {
   ngAfterViewInit(){
   this.apiService.getPrescription().subscribe(
     (response) => {
-     this.prescriptions = response.prescriptions
-     console.log(this.prescriptions)
+     this.prescriptions = response.result
+     //console.log(this.prescriptions)
    },
    (error) => {
      console.error('Erreur lors de la vérification des réponses:', error);
@@ -54,10 +55,23 @@ export class HomePageComponent {
    }
  )
 }
-
-exportToPDF(){
-  console.log("EXPORT PDF")
+exportToPDF(): void {
+  this.apiService.exportPrescriptions().subscribe(
+    (response) => {
+      const blob = response.body;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'prescriptions.pdf'; // Nom du fichier PDF téléchargé
+      link.click();
+      window.URL.revokeObjectURL(url); // Libérer la mémoire
+    },
+    (error) => {
+      console.error('Erreur lors du téléchargement du PDF:', error);
+    }
+  );
 }
+
   async ngOnInit() {
     this.displayDate = new Date();
     // Appel initial de la méthode checkNotify

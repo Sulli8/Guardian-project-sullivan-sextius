@@ -6,7 +6,7 @@ const webPush = require('web-push');  // Importer la bibliothèque WebPush
 const { auth } = require('express-oauth2-jwt-bearer');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const authConfig = require('./auth_config.json');
- 
+const PDFDocument = require('pdfkit');
 const app = express();
 const uri = "mongodb+srv://sullivansextius:T1vcZx08zLzE0pVr@cluster0.hlc6i.mongodb.net/guardian-project?retryWrites=true&w=majority";
 
@@ -535,15 +535,126 @@ app.get('/api/get-notifications', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
-app.get('/api/get-prescriptions',checkJwt , async(req, res) => {
+
+
+app.get('/api/export-pdf/prescriptions', checkJwt, async (req, res) => {
+  const tokenFromJwt = req.auth.payload.sub;
+  const user = await db.collection('users').findOne({ token: tokenFromJwt });
+
+  if (!user) {
+    return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+  }
+
   try {
-    const tokenFromJwt = req.auth.payload.sub; 
+    // Récupérer les prescriptions de l'utilisateur
+    const prescriptions = await db.collection('prescriptions')
+      .find({ userId: user._id })
+      .toArray();
+
+    if (prescriptions.length === 0) {
+      return res.status(404).json({ message: 'Aucune prescription trouvée pour cet utilisateur.' });
+    }
+
+    // Récupérer les medicaments en fonction de leurs IDs dans les prescriptions
+    const medicamentIds = prescriptions.map(prescription => prescription.medicamentId);
+    
+    // Récupérer les médicaments associés en une seule requête
+    const medicaments = await db.collection('medicaments')
+      .find({ _id: { $in: medicamentIds } })
+      .toArray();
+
+    // Fusionner les prescriptions et les médicaments
+    const result = prescriptions.map(prescription => {
+      const associatedMedicaments = medicaments.filter(medicament =>
+        medicament._id.equals(prescription.medicamentId)
+      );
+      
+      return {
+        _id: prescription._id,
+        medicamentId: prescription.medicamentId,
+        frequence: prescription.frequence,
+        dosage: prescription.dosage,
+        datePrescribed: prescription.datePrescribed,
+        medicaments: associatedMedicaments.map(medicament => ({
+          name: medicament.name,
+          dosage: medicament.dosage,
+          description: medicament.description,
+          type: medicament.type,
+        })),
+      };
+    });
+
+    // Créer un document PDF
+    const doc = new PDFDocument({ size: 'A4', margin: 30 });
+
+    // Définir les en-têtes pour le fichier PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="prescriptions.pdf"');
+
+    doc.pipe(res);
+
+    // Titre du document PDF
+    doc.fontSize(25).text('Liste des prescriptions', { align: 'center' });
+    doc.moveDown();
+
+    // Tableau
+    const tableTop = 120;
+    const marginLeft = 50;
+    const columnWidth = 130; // Largeur des colonnes
+    const rowHeight = 20; // Hauteur des lignes
+    const padding = 5; // Padding à l'intérieur des cellules
+    const tableWidth = columnWidth * 4; // 4 colonnes
+
+    // En-têtes du tableau
+    doc.fontSize(12).text('Médicament', marginLeft + padding, tableTop + padding);
+    doc.text('Dosage', marginLeft + columnWidth + padding, tableTop + padding);
+    doc.text('Fréquence', marginLeft + columnWidth * 2 + padding, tableTop + padding);
+    doc.text('Date Prescrite', marginLeft + columnWidth * 3 + padding, tableTop + padding);
+    doc.moveDown();
+
+    // Dessiner les bordures des en-têtes
+    doc.rect(marginLeft, tableTop, columnWidth * 4, rowHeight).stroke();
+
+    // Lignes du tableau
+    let currentY = tableTop + rowHeight;
+    result.forEach(prescription => {
+      // Dessiner chaque ligne du tableau avec du padding
+      doc.text(prescription.medicaments[0].name, marginLeft + padding, currentY + padding);
+      doc.text(prescription.dosage, marginLeft + columnWidth + padding, currentY + padding);
+      doc.text(prescription.frequence, marginLeft + columnWidth * 2 + padding, currentY + padding);
+      doc.text(new Date(prescription.datePrescribed).toLocaleDateString(), marginLeft + columnWidth * 3 + padding, currentY + padding);
+      doc.moveDown();
+
+      // Dessiner les bordures des cellules avec du padding
+      doc.rect(marginLeft, currentY, columnWidth, rowHeight).stroke();
+      doc.rect(marginLeft + columnWidth, currentY, columnWidth, rowHeight).stroke();
+      doc.rect(marginLeft + columnWidth * 2, currentY, columnWidth, rowHeight).stroke();
+      doc.rect(marginLeft + columnWidth * 3, currentY, columnWidth, rowHeight).stroke();
+
+      currentY += rowHeight;
+    });
+
+    // Dessiner la bordure autour du tableau entier
+    doc.rect(marginLeft, tableTop, tableWidth, currentY - tableTop).stroke();
+
+    // Fin du document PDF
+    doc.end();
+  } catch (error) {
+    console.error('Erreur lors de la création du PDF:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la création du PDF.' });
+  }
+});
+
+app.get('/api/get-prescriptions', checkJwt, async (req, res) => {
+  try {
+    const tokenFromJwt = req.auth.payload.sub;
 
     // Rechercher l'utilisateur dans la base de données
     const user = await db.collection('users').findOne({ token: tokenFromJwt });
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
+
     // Récupérer toutes les prescriptions de cet utilisateur
     const prescriptions = await db.collection("prescriptions").find({ userId: user._id }).toArray();
 
@@ -552,13 +663,33 @@ app.get('/api/get-prescriptions',checkJwt , async(req, res) => {
       return res.status(404).json({ message: 'Aucune prescription trouvée pour cet utilisateur.' });
     }
 
-    // Retourner les prescriptions sous forme de réponse JSON
-    res.status(200).json({message:"Récupération des prescription avec succès", prescriptions});
+    // Récupérer les medicaments en fonction de leurs IDs dans les prescriptions
+    // Création d'un tableau d'ID des médicaments associés aux prescriptions
+    const medicamentIds = prescriptions.map(prescription => prescription.medicamentId);
+
+    // Récupérer les médicaments associés en une seule requête
+    const medicaments = await db.collection("medicaments").find({ _id: { $in: medicamentIds } }).toArray();
+
+    // Fusionner les prescriptions et les médicaments
+    const result = prescriptions.map(prescription => {
+      // Ajouter les médicaments associés à chaque prescription
+      const associatedMedicaments = medicaments.filter(medicament => medicament._id.equals(prescription.medicamentId));
+      prescription.medicaments = associatedMedicaments;
+      return prescription;
+    });
+
+    // Retourner les prescriptions fusionnées avec les médicaments associés
+    res.status(200).json({
+      message: "Récupération des prescriptions avec succès",
+      result
+    });
+
   } catch (error) {
     console.error('Erreur lors de la récupération des prescriptions:', error);
     res.status(500).json({ message: 'Erreur serveur lors de la récupération des prescriptions.' });
   }
 });
+
 app.get('/api/get-user', checkJwt, async (req, res) => {
   try {
     const tokenFromJwt = req.auth.payload.sub;  // On suppose que le middleware de vérification de JWT a déjà rempli req.auth avec le payload du token

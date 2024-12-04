@@ -34,27 +34,38 @@
 
     <!-- Export au format PDF -->
     <div class="container-parent-prescription-about">
+      <div class="enregistrement-prescription">
+        <h2>Enregistrer</h2>
+        <p class="status-prescription"></p>
+      </div>
       <button class="add-treatment">Traitements au besoin</button>
-      <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
       <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
       <button class="add-treatment" (click)="exportToPDF()">Export au format PDF</button>
     </div>
 
     <div class="container-enregistrement">
-        <!-- Section pour enregistrer la prescription -->
-        <div class="enregistrement-prescription">
-          <h2>Enregistrer</h2>
-          <p class="status-prescription"></p>
-        </div>
+      
 
         <!-- Liste des prescriptions -->
         <div class="container-parent-prescription">
           <h2>Vos traitements / prescriptions</h2>
           <div class="container-prescriptions">
             <div class="prescription-item" *ngFor="let prescription of prescriptions">
-              <img [src]="prescription.image" alt="Image traitement"/>
-              <div class="dosage">Dosage {{ prescription.dosage }}</div>
-              <div class="recurrence">Date de prescription {{ prescription.timePrescribed }}</div>
+              <div class="img-container" *ngFor="let med of prescription.medicaments">
+                <img class="img-drugs" *ngIf="med.type === 'comprime'" src="../../../assets/icons/icon-comprime.png" alt="Image comprimé">
+                <img class="img-drugs" *ngIf="med.type === 'gellule'" src="../../../assets/icons/icon-gellule.png" alt="Image gélule">
+                <img class="img-drugs" *ngIf="med.type === 'topique'" src="../../../assets/icons/icon-topique.png" alt="Image topique">
+              </div>
+              <div class="container-dosage-recurrence">
+               <div>
+                <div class="dosage">Dosage </div>
+                <p>{{ prescription.dosage }}</p>
+               </div>
+              <div>
+                <div class="recurrence">Date de prescription</div>
+              <p> {{ prescription.timePrescribed }}</p>
+              </div>
+              </div>
             </div>
           </div>
         </div>
