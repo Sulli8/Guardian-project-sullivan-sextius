@@ -38,9 +38,13 @@
         <h2>Enregistrer</h2>
         <p class="status-prescription"></p>
       </div>
-      <button class="add-treatment">Traitements au besoin</button>
-      <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
-      <button class="add-treatment" (click)="exportToPDF()">Export au format PDF</button>
+
+      <div class="container-btn">
+        <button class="add-treatment treatement-need" (click)="treatmentNeed()">Traitements au besoin</button>
+        <button class="add-treatment" (click)="addPrescription()">Ajouter un traitement</button>
+        <button class="add-treatment" (click)="exportToPDF()">Export au format PDF</button>
+      </div>
+      
     </div>
 
     <div class="container-enregistrement">
@@ -71,7 +75,7 @@
         </div>
 
         <!-- Détails supplémentaires sur les traitements -->
-        <div class="container-parent-prescription-details">
+        <div (click)="followTreatment()" class="container-parent-prescription-details">
           <h2>A propos des données Traitement</h2>
           <div class="container-details">
             <img src="../../../assets/icons/data-info.png"/>

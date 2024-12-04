@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1732981588272,
+  "timestamp": 1733351710759,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -16,11 +16,11 @@
         "/custom_sw.js",
         "/favicon.ico",
         "/index.html",
-        "/main.78bca92f92b73f2d.js",
+        "/main.fae1da1bb7763197.js",
         "/manifest.webmanifest",
         "/polyfills.b80a66f2c3d0ed78.js",
         "/runtime.611cc7cee9777e8b.js",
-        "/styles.15d5afb805891b90.css"
+        "/styles.f95679c1031d3dea.css"
       ],
       "patterns": []
     },
@@ -32,6 +32,7 @@
         "ignoreVary": true
       },
       "urls": [
+        "/assets/icons/data-info.png",
         "/assets/icons/icon-128x128.png",
         "/assets/icons/icon-144x144.png",
         "/assets/icons/icon-152x152.png",
@@ -40,6 +41,15 @@
         "/assets/icons/icon-512x512.png",
         "/assets/icons/icon-72x72.png",
         "/assets/icons/icon-96x96.png",
+        "/assets/icons/icon-add-treatement-1.png",
+        "/assets/icons/icon-add-treatement-2.png",
+        "/assets/icons/icon-add-treatement-3.png",
+        "/assets/icons/icon-add-treatement-form-2.png",
+        "/assets/icons/icon-comprime.png",
+        "/assets/icons/icon-gellule.png",
+        "/assets/icons/icon-guardian-project-notification.png",
+        "/assets/icons/icon-topique.png",
+        "/assets/icons/icon-treatment-1.png",
         "/assets/loading.svg",
         "/assets/logo.png"
       ],
@@ -50,6 +60,7 @@
   "hashTable": {
     "/300.453f9568410af249.js": "41cf53d0280a512d69a5124c658aeb133b4a14eb",
     "/761.6832332e1484d5ff.js": "ffe7aa995eab6bc7c973190726e64b716cdd2db6",
+    "/assets/icons/data-info.png": "11db5ffd9d780efae2f39ec9d61b6c8d692797dc",
     "/assets/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
     "/assets/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
     "/assets/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
@@ -58,16 +69,25 @@
     "/assets/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
     "/assets/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
     "/assets/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "/assets/icons/icon-add-treatement-1.png": "3b75a6d881d73b57ac2dfe56c92b130dc588b7aa",
+    "/assets/icons/icon-add-treatement-2.png": "c8af6fa1c821d45bb0db5e17a63a52029500857b",
+    "/assets/icons/icon-add-treatement-3.png": "651d657f1d2e2869a0d4a3a5d8e33fb0c9b237dd",
+    "/assets/icons/icon-add-treatement-form-2.png": "ba8ae1668953eda8c2ab407b9dfaa273911420f4",
+    "/assets/icons/icon-comprime.png": "4abcbbabdd31c4dece83c2ce8c6c3477e6b61448",
+    "/assets/icons/icon-gellule.png": "bd2dc513ec4bd73193b289ca9e4949275eaead5e",
+    "/assets/icons/icon-guardian-project-notification.png": "4c39f461a0c60a5e8c2cb9ad99707f3817ef082f",
+    "/assets/icons/icon-topique.png": "bf05abe1438a78d0de53cb49ce5a40877007e2d4",
+    "/assets/icons/icon-treatment-1.png": "ca0e2c2e52dc28bb51dfc6721d64c44c41225ea8",
     "/assets/loading.svg": "1db6b972b3806ca3e77c77f1aa4947f0e2c11ab6",
     "/assets/logo.png": "f0191f8d50460c560d9e28b29e849b4f44ed0bf4",
     "/custom_sw.js": "3449df0850370488de866ca42c5ddef07e0e1faa",
     "/favicon.ico": "84161b857f5c547e3699ddfbffc6d8d737542e01",
-    "/index.html": "071a8174f0a8229f9ad89e79a0c30963a2495abb",
-    "/main.78bca92f92b73f2d.js": "edd773208fd7bcd750700bde58a7fd445868bfc1",
+    "/index.html": "360065023161a41ec6cc150fd370dce850cd4844",
+    "/main.fae1da1bb7763197.js": "e9ac903f61d4f733aaa27eacc90bf29462a4d390",
     "/manifest.webmanifest": "4ba077287b1d5566ebc23ff85760704e3d553e64",
     "/polyfills.b80a66f2c3d0ed78.js": "8faf76ada951e7608827a9aa810dfe59c4494229",
     "/runtime.611cc7cee9777e8b.js": "cc1cf0471533cd6fd430d3d382594ec0534a865c",
-    "/styles.15d5afb805891b90.css": "bf4adc813875ef7ecb5759b3a8587a3393a59e2c"
+    "/styles.f95679c1031d3dea.css": "b1bcdf9775250a6c1c7dcca667af0481c3d25332"
   },
   "navigationUrls": [
     {

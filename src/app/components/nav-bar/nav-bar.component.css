@@ -6,9 +6,6 @@ ul {
     align-items: center;   
 }
 
-#navbarNav {
-    padding: 10px;
-}
 .nav-item {
     display: flex;
     justify-content: center;
