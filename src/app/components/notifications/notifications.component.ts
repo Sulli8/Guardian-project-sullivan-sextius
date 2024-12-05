@@ -58,6 +58,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    console.log(this.NotifsAllowed);
     // Vérification de l'état de la permission des notifications
     if (Notification.permission === 'granted') {
       console.log('Notification granted');
@@ -82,12 +83,30 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   /**
    * Vérifie si l'utilisateur est abonné aux notifications
    */
+
+  exportPdf(){
+    this.api.exportNotifications().subscribe(
+      (response) => {
+        const blob = response.body;
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'prescriptions.pdf'; // Nom du fichier PDF téléchargé
+        link.click();
+        window.URL.revokeObjectURL(url); // Libérer la mémoire
+      },
+      (error) => {
+        console.error('Erreur lors du téléchargement du PDF:', error);
+      }
+    );
+  }
   checkIsSubscribed(): void {
     this.api.checkIsSubsribe().subscribe(
       (response) => {
         // Vérification de l'état de l'abonnement
         if (response.isSubscribed) {
           this.NotifsAllowed = true;  // L'utilisateur est abonné
+          console.log(this.NotifsAllowed)
           this.showSuccessAlert('Vous êtes déjà abonné aux notifications.');
         } else {
           this.NotifsAllowed = false; // L'utilisateur n'est pas abonné

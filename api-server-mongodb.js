@@ -1,6 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const fs = require('fs');
+const puppeteer = require('puppeteer');
+const handlebars = require('handlebars');
 const cors = require('cors');
 const webPush = require('web-push');  // Importer la bibliothèque WebPush
 const { auth } = require('express-oauth2-jwt-bearer');
@@ -8,6 +11,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const authConfig = require('./auth_config.json');
 const PDFDocument = require('pdfkit');
 const app = express();
+const path = require('path');
 const uri = "mongodb+srv://sullivansextius:T1vcZx08zLzE0pVr@cluster0.hlc6i.mongodb.net/guardian-project?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri, {
@@ -535,6 +539,163 @@ app.get('/api/get-notifications', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
+
+
+
+app.get('/api/export-pdf/notifications', checkJwt, async (req, res) => {
+  const tokenFromJwt = req.auth.payload.sub;
+  const user = await db.collection('users').findOne({ token: tokenFromJwt });
+
+  if (!user) {
+    return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+  }
+
+  try {
+    // Récupérer les notifications et prescriptions
+    const notifications = await db.collection('notifications')
+      .find({ userId: user._id })
+      .toArray();
+
+    if (notifications.length === 0) {
+      return res.status(404).json({ message: 'Aucune notification trouvée pour cet utilisateur.' });
+    }
+
+    const prescriptionIds = notifications.map(notification => notification.prescriptionId);
+    const prescriptions = await db.collection('prescriptions')
+      .find({ _id: { $in: prescriptionIds } })
+      .toArray();
+
+    const result = notifications.map(notification => {
+      const associatedPrescriptions = prescriptions.filter(prescription => prescription._id.equals(notification.prescriptionId));
+
+      return {
+        ...notification,
+        sentAt: new Date(notification.sentAt).toLocaleDateString(),
+        dateNotification: new Date(notification.dateNotification).toLocaleDateString(),
+        prescriptions: associatedPrescriptions.map(prescription => ({
+          ...prescription,
+          datePrescribed: new Date(prescription.datePrescribed).toLocaleDateString(),
+          timePrescribed: new Date(prescription.timePrescribed).toLocaleTimeString(),
+        })),
+      };
+    });
+
+    // Créer un document PDF
+    const doc = new PDFDocument({ size: 'A4', margin: 30 });
+
+    // Définir les en-têtes HTTP pour le fichier PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="notifications_prescriptions.pdf"');
+
+    // Rediriger la sortie du document vers la réponse HTTP
+    doc.pipe(res);
+
+    // Arrière-plan noir
+    doc.rect(0, 0, doc.page.width, doc.page.height).fill('black');
+
+    // Ajouter une image en haut à gauche
+    const imagePath = path.resolve(__dirname, './src/assets/icons/doc-pdf-icon.png');
+    if (fs.existsSync(imagePath)) {
+      const imageWidth = 100; // Largeur de l'image
+      const imageHeight = 100; // Hauteur estimée de l'image
+      doc.image(imagePath, 500, 10, { width: imageWidth }); // Position à gauche avec une marge de 30px
+      doc.moveDown(5); // Ajouter un espace après l'image
+    }
+
+    // Ajouter un espace supplémentaire après l'image
+    doc.moveDown(2); // Ajustez le nombre si nécessaire
+
+    // Titre principal
+    doc
+      .fillColor('white')
+      .fontSize(18)
+      .text('Liste des Notifications et Prescriptions', {
+        align: 'center',
+        underline: true,
+      });
+    doc.moveDown(2); // Espacement sous le titre
+
+    result.forEach(notification => {
+      // Ajouter la section Notification
+      doc
+        .fontSize(14)
+        .fillColor('white')
+        .text(`Notification : ${notification.title}`, { underline: true });
+    
+      const notificationData = [
+        `Corps : ${notification.body}`,
+        `Statut : ${notification.status}`,
+        `Date d'envoi : ${notification.sentAt}`,
+        `Nombre de Notifications : ${notification.nbNotification}`,
+        `Date Notification : ${notification.dateNotification}`,
+        `Abonné : ${notification.isSubscribed ? 'Oui' : 'Non'}`,
+      ];
+    
+      notificationData.forEach(item => {
+        // Ajouter une vérification pour la hauteur de la page avant d'écrire
+        if (doc.y + 20 > doc.page.height - doc.page.margins.bottom) {
+          doc.addPage()
+            .rect(0, 0, doc.page.width, doc.page.height)
+            .fill('black');
+        }
+        doc.fontSize(12).text(item, { indent: 20 });
+      });
+    
+      doc.moveDown();
+    
+      // Ajouter les prescriptions liées à la notification
+      notification.prescriptions.forEach((prescription, index) => {
+        // Vérifier si l'espace restant sur la page est suffisant
+        if (doc.y + 60 > doc.page.height - doc.page.margins.bottom) {
+          doc.addPage()
+            .rect(0, 0, doc.page.width, doc.page.height)
+            .fill('black');
+        }
+    
+        doc
+          .fontSize(12)
+          .fillColor('white')
+          .text(`Prescription ${index + 1} :`, { indent: 20 });
+    
+        const prescriptionData = [
+          `Fréquence : ${prescription.frequence}`,
+          `Dosage : ${prescription.dosage}`,
+          `Date Prescription : ${prescription.datePrescribed}`,
+          `Heure Prescription : ${prescription.timePrescribed}`,
+        ];
+    
+        prescriptionData.forEach(item => {
+          if (doc.y + 20 > doc.page.height - doc.page.margins.bottom) {
+            doc.addPage()
+              .rect(0, 0, doc.page.width, doc.page.height)
+              .fill('black');
+          }
+          doc.fontSize(12).text(item, { indent: 40 });
+        });
+    
+        doc.moveDown();
+      });
+    
+      // Vérifier si l'espace restant sur la page est suffisant pour une séparation
+      if (doc.y + 30 > doc.page.height - doc.page.margins.bottom) {
+        doc.addPage()
+          .rect(0, 0, doc.page.width, doc.page.height)
+          .fill('black');
+      }
+    
+      doc.moveDown(2);
+    });
+    
+
+    // Terminer le document PDF
+    doc.end();
+  } catch (error) {
+    console.error('Erreur lors de la création du PDF:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la création du PDF.' });
+  }
+});
+
+
 
 
 app.get('/api/export-pdf/prescriptions', checkJwt, async (req, res) => {

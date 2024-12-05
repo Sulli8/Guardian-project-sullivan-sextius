@@ -52,6 +52,7 @@
     "pdfkit": "^0.15.1",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
+    "puppeteer": "^23.10.1",
     "rxjs": "^6.6.7",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",

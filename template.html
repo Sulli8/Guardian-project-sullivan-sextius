@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications et Prescriptions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: white;
+    }
+    .container {
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      width: 150px;
+    }
+    .section {
+      margin-bottom: 30px;
+      border: 1px solid white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .section h2 {
+      color: #FFD700;
+    }
+    .prescription {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px dashed white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="src/assets/icons/doc-pdf-icon.png" alt="Icon">
+      <h1>Liste des Notifications et Prescriptions</h1>
+    </div>
+    {{#each notifications}}
+    <div class="section">
+      <h2>Notification</h2>
+      <p><strong>Titre:</strong> {{this.title}}</p>
+      <p><strong>Corps:</strong> {{this.body}}</p>
+      <p><strong>Statut:</strong> {{this.status}}</p>
+      <p><strong>Date d'Envoi:</strong> {{this.sentAt}}</p>
+      <p><strong>Nombre de Notifications:</strong> {{this.nbNotification}}</p>
+      <p><strong>Date de Notification:</strong> {{this.dateNotification}}</p>
+      <p><strong>Abonné:</strong> {{this.isSubscribed}}</p>
+
+      {{#each this.prescriptions}}
+      <div class="prescription">
+        <h3>Prescription</h3>
+        <p><strong>Fréquence:</strong> {{this.frequence}}</p>
+        <p><strong>Dosage:</strong> {{this.dosage}}</p>
+        <p><strong>Médicament:</strong> {{this.medicamentName}}</p>
+        <p><strong>Dosage Médicament:</strong> {{this.medicamentDosage}}</p>
+        <p><strong>Date Prescription:</strong> {{this.datePrescribed}}</p>
+        <p><strong>Heure Prescription:</strong> {{this.timePrescribed}}</p>
+      </div>
+      {{/each}}
+    </div>
+    {{/each}}
+  </div>
+</body>
+</html>

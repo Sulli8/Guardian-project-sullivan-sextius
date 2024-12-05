@@ -532,12 +532,14 @@ h1 {
   align-items: center;
   flex-direction: column;
   gap: 20px;
+  margin-top: 100px;
 }
-.container-parent-prescription-about {
-  height: 40vh;
-}
+
 /* Extra Small Screen Adjustments */
 @media (max-width: 480px) {
+  .container-btn  {
+    margin-top: 10px;
+  }
   .treatement-need {
     margin-top: 200px;
   }

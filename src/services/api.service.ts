@@ -37,6 +37,13 @@ export class ApiService {
     });
   }
 
+  exportNotifications(): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${config.apiUri}/api/export-pdf/notifications`, {
+      observe: 'response',
+      responseType: 'blob'  // L'API renvoie un fichier binaire (PDF)
+    });
+  }
+
   handleRedirection(valeur: boolean): void {
     
     if (valeur) {

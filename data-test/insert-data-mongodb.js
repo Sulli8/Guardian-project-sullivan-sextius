@@ -177,6 +177,20 @@ async function insertData() {
         isSubscribe: false, // Ajout du champ isSubscribe, initialisé à false
       }
     ]);
+
+    await Notification.insertMany([
+      ...Array(10).fill(null).map((_, index) => ({
+        userId: users[0]._id, // L'utilisateur 0
+        title: `Nouvelle prescription ${index + 1}`, // Titre unique pour chaque notification
+        body: `Vous avez une nouvelle prescription pour l'Aspirin. Notification ${index + 1}`,
+        status: 'unread', // Statut de la notification
+        url: `https://votre-site.com/prescription/2`, // URL de la prescription
+        prescriptionId: prescriptions[2]._id, // Prescription associée à toutes les notifications
+        nbNotification: 1, // Initialisation du compteur de notifications
+        dateNotification: new Date(), // Date de la notification envoyée
+        isSubscribe: false, // Abonnement initialisé à false
+      }))
+    ]);
       console.log('Notifications insérées avec succès');
 
 

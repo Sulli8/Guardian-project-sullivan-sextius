@@ -10,7 +10,7 @@
     </div>
     <p *ngIf="displayMessage">Merci d'autoriser les notifications dans votre navigateur</p>
     <div class="buttons-container">
-      <button [disabled]="NotifsAllowed" (click)="subscribeToPush()" class="button">
+      <button *ngIf="!NotifsAllowed" (click)="subscribeToPush()" class="button">
         <div class="box-btn-child">
           <p>Souscrire aux notifications</p>
         </div>
@@ -30,7 +30,7 @@
       </button>
 
       <div *ngIf="NotifsAllowed" class="buttons-container-child">
-        <button class="button">
+        <button (click)="exportPdf()" class="button">
 
           <div class="box-btn-child">
             <p> Exporter mes données</p>
