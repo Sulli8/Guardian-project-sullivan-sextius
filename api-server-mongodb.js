@@ -288,6 +288,9 @@ app.get('/api/check-answers', checkJwt, async (req, res) => {
 
     // Cherchez les réponses de cet utilisateur dans la collection
     const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if(!user){
+      return res.status(404).json({ message: 'Le quesitonnaire de santé est obligatoire', valeur: false });
+    }
     const userResponses = await responsesCollection.findOne({ userId: user._id });
 
     if (userResponses) {

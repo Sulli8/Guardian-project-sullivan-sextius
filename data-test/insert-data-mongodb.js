@@ -18,7 +18,7 @@ async function insertData() {
     await Question.deleteMany({});
     await Response.deleteMany({});
     await Notification.deleteMany({});
-
+/*
     // Étape 1: Insérer des utilisateurs avec un token
     const users = await User.insertMany([
       { 
@@ -44,7 +44,7 @@ async function insertData() {
       }
     ]);
     console.log('Utilisateurs insérés avec succès');
-
+*/
     // Étape 2: Insérer des médicaments
     const medicaments = await Medicament.insertMany([
       { name: 'Paracetamol', dosage: '500 mg', description: 'Médicament contre la douleur', type: 'comprime' },
@@ -72,7 +72,7 @@ async function insertData() {
 
     console.log('Médicaments insérés avec succès');
     
-   
+   /*
     // Étape 3: Insérer des prescriptions
     const prescriptions = await Prescription.insertMany([
       {
@@ -104,7 +104,7 @@ async function insertData() {
     
     console.log('Prescriptions insérées avec succès');
 
-
+*/
   
     const insertedQuestions = await Question.insertMany( [
       { step: 1, text: 'Quel est votre âge ?', type: 'number' },
@@ -123,7 +123,7 @@ async function insertData() {
     ]);
     console.log('Questions insérées avec succès');
     
-    const responses = await Response.insertMany([
+  /* const responses = await Response.insertMany([
       { responseText: '30', questionId: insertedQuestions[0]._id, userId: users[1]._id },
       { responseText: 'true', questionId: insertedQuestions[1]._id, userId: users[1]._id },
       { responseText: 'false', questionId: insertedQuestions[2]._id, userId: users[1]._id },
@@ -193,7 +193,7 @@ async function insertData() {
     ]);
       console.log('Notifications insérées avec succès');
 
-
+*/
   } catch (error) {
     console.error('Erreur lors de l\'insertion des données:', error);
   } finally {
