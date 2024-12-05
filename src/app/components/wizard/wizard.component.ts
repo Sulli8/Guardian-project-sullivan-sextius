@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/services/api.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.component.html',
@@ -70,32 +70,58 @@ export class WizardComponent {
     }
   }
 
-
   submitWizard() {
-    console.log('Réponses soumises:', this.responses);
-
-    // 1. Structurer les réponses, si nécessaire
     const formattedResponses = this.formatResponses(this.responses);
-
-    // 2. Soumettre les réponses au backend via le service
-    this.apiService.submitResponses(formattedResponses).subscribe(
-      (response) => {
-        console.log('Réponses envoyées avec succès', response);
-        
-        // Vérifiez si la réponse du backend indique un succès
-        if (response.message === 'Réponses enregistrées avec succès') {
-          // Redirige l'utilisateur vers la page d'accueil
-          this.router.navigate(['/home-page']);  // 'home-page' est l'URL vers la page d'accueil
-        }
-
-        this.onSubmit.emit({ success: true, response });  // Émet un événement si l'envoi réussit
-      },
-      (error) => {
-        console.error('Erreur lors de l\'envoi des réponses', error);
-        this.onSubmit.emit({ success: false, error });  // Émet un événement en cas d'erreur
+   
+    // Afficher la fenêtre de confirmation avec SweetAlert2
+    Swal.fire({
+      title: 'Êtes-vous sûr de vouloir soumettre le questionnaire?',
+      text: 'Vous ne pourrez pas modifier vos réponses une fois soumises.',
+      icon: 'warning',
+      showCancelButton: true,  // Montre un bouton "Annuler"
+      confirmButtonText: 'Oui, soumettre',
+      cancelButtonText: 'Non, annuler',
+      reverseButtons: true  // Inverse l'ordre des boutons (Annuler à gauche, Soumettre à droite)
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si l'utilisateur confirme, on peut envoyer les réponses
+        this.apiService.submitResponses(formattedResponses).subscribe(
+          (response) => {
+            console.log('Réponses envoyées avec succès', response);
+            
+            // Vérifiez si la réponse du backend indique un succès
+            if (response.message === 'Réponses enregistrées avec succès') {
+              // Redirige l'utilisateur vers la page d'accueil
+              this.router.navigate(['/home-page']);  // 'home-page' est l'URL vers la page d'accueil
+            }
+            this.onSubmit.emit({ success: true, response });
+           
+              // Émet un événement si l'envoi réussit
+          },
+          (error) => {
+            console.error('Erreur lors de l\'envoi des réponses', error);
+            this.onSubmit.emit({ success: false, error });  // Émet un événement en cas d'erreur
+          }
+        );
+     
+        Swal.fire(
+          'Soumis!',
+          'Vos réponses ont été envoyées avec succès.',
+          'success'
+        );
+        // Appelez la logique de soumission ici, par exemple envoyer les réponses à votre serveur.
+        // this.apiService.submitResponses(responses);
+      } else {
+        // Si l'utilisateur annule, vous pouvez afficher un message d'annulation
+        Swal.fire(
+          'Annulé',
+          'La soumission du questionnaire a été annulée.',
+          'info'
+        );
       }
-    );
+    });
   }
+
 
   // Exemple de méthode pour formater les réponses avant de les envoyer (si nécessaire)
   formatResponses(responses: any) {

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { WizardComponent } from '../wizard/wizard.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-questionnaire',
@@ -13,13 +14,13 @@ import { CommonModule } from '@angular/common';
 export class QuestionnaireComponent {
 
   handleSubmit(responses: any) {
-    console.log('Les réponses finales du questionnaire sont :', responses);
-    alert('Merci pour vos réponses !');
+    console.log('Les réponses finales du questionnaire sont :', responses);
   }
+  
   
   // Exemple de questionnaire
   questionnaire = {
-    title: 'Questionnaire de snaté',
+    title: 'Questionnaire de santé',
     steps: [
       {
         label: 'Étape 1',

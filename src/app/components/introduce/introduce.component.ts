@@ -3,6 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { ApiService } from 'src/services/api.service';
 @Component({
   selector: 'app-introduce',
   templateUrl: './introduce.component.html',
@@ -18,12 +19,26 @@ import { Router, RouterLink } from '@angular/router';
 export class IntroduceComponent {
 
   constructor(
+    private api:ApiService,
     public auth: AuthService, private router: Router,
     @Inject(DOCUMENT) private doc: Document
   ) {}
+
+  login(){
+     this.auth.isAuthenticated$.subscribe(isAuthenticated => {
+      if (isAuthenticated) {
+        console.log("AUTH")
+        this.api.loginUser().subscribe(res => {
+          if(res.message == 'User created successfully' || res.message == "Utilisateur déjà existant, aucun ajout nécessaire."){
+            this.router.navigate(['/home-page']);
+          } 
+        })
+      }
+    });
+  }
   onSignIn() {
-    console.log('Sign In button clicked!');
     this.auth.loginWithRedirect();
+    this.login()
   }
   isAuth(){
     this.auth.isAuthenticated$.subscribe(isAuthenticated => {
@@ -39,13 +54,7 @@ export class IntroduceComponent {
   }
 
   ngOnInit() {
-    // Vérifiez si l'utilisateur est déjà authentifié et redirigez-le
-    this.auth.isAuthenticated$.subscribe(isAuthenticated => {
-      if (isAuthenticated) {
-        // Si l'utilisateur est authentifié, redirigez-le vers la page d'accueil
-        this.router.navigate(['/home-page']); // Remplacez "/home" par le chemin de votre page d'accueil
-      }
-    });
+   this.login()
   }
 
   logout() {

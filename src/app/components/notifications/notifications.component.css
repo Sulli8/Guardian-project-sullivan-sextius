@@ -194,7 +194,10 @@
     color: white;
   }
   
-
+  .container-list-notification {
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
   @media screen and (max-width: 500px) {
     .title {
       font-size: 25px;
@@ -203,10 +206,7 @@
       flex-direction: column; /* Les boutons s'empilent en colonne */
       align-items: center; /* Centre les boutons dans le conteneur */
     }
-    .container-list-notification {
-      overflow-y: scroll;
-      overflow-x: hidden;
-    }
+  
     .container-box {
       width: 100%;
     }

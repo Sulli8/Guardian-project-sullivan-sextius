@@ -43,8 +43,106 @@
     border-radius: 3px;
     cursor: pointer;
   }
+
+  input[type="text"] {
+    padding: 10px;
+    border: none;
+      border-bottom-width: medium;
+      border-bottom-style: none;
+      border-bottom-color: currentcolor;
+      background: none;
+      border-bottom: 1px solid aliceblue;
+      cursor:pointer ;
+      color: #fff;
+  }
+
+  input[type="number"] {
+    padding: 10px;
+    border: none;
+    border-bottom-width: medium;
+    border-bottom-style: none;
+    border-bottom-color: currentcolor;
+    background: none;
+    border: 1px solid aliceblue;
+    cursor:pointer ;
+    color: #fff;
+    margin-left: 10px;
+  }
   
+  .title-questionnary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap:10px;
+  }
+
+  .input-radio.on:checked {
+    box-shadow: 0px 0px 0px 4px #00eb27;
+    background-color: #51ff6e;
+}
+
+
+ .span {
+    background: radial-gradient(134.26% 244.64% at 42.92% -80.36%, #b301b3 25.45%, #381dbd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .icon-guardian {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+}
+
   button:disabled {
     background-color: #ccc;
   }
   
+.step-class {
+  background-color: #007bff3a;
+  color: #007bff;
+}
+.step-content {
+  font-weight: 100;
+}
+  .step-content > div {
+    padding: 10px;
+  }
+
+
+  @media (max-width: 500px) {
+    .wizard {
+      max-width: 400px;
+    }
+  }
+
+  /* Styles pour les cases à cocher personnalisées */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.checkbox-container input {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.checkbox-container input:checked {
+  background-color: #4CAF50; /* Colorier la case en vert quand elle est cochée */
+}
+
+.checkbox-container input:focus {
+  outline: none;
+  border: 2px solid #4CAF50;
+}

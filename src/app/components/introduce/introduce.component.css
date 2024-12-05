@@ -44,12 +44,12 @@ button {
 
   .paraph-text {
     color: #ffffff61;
+    padding: 20px;
+
   }
   /* BOUTONS CENTRÉS */
   .side-right {
-   
     width: 100%;
-   
     height: 100%;
     gap: 20px; /* Espacement entre les boutons */
   }
@@ -77,20 +77,22 @@ button {
     color: #fff;
     background-image: radial-gradient(134.26% 244.64% at 42.92% -80.36%,#b301b3 25.45%,#381dbd 100%);
   }
+  .span {
+    background: radial-gradient(134.26% 244.64% at 42.92% -80.36%, #b301b3 25.45%, #381dbd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
   
   .title-main {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  .side-left {
-    width: 100%;
-    height: 100%;
-  }
 
-  
 
   .side-right {
+    align-items: center;
+    justify-content: center;
     flex-direction: row; /* Boutons empilés verticalement */
     gap: 15px; /* Réduction de l'espacement */
     width: 100%;
@@ -99,7 +101,48 @@ button {
 
   /* MEDIA QUERY POUR PETITS ÉCRANS */
   @media (max-width: 500px) {
-  
+    button:nth-child(1) {
+      width: 80%;
+    }
+    .container {
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: scroll;
+      gap: 100px;
+    }
+    .paraph-text {
+      color: #ffffff61;
+      padding: 20px;
+      text-align: center;
+    }
+    .side-right {
+      width: 100%;
+      height: 100%;
+    }
+
+    .side-left{
+      display: block;
+    }
+
+    .title-main {
+      flex-direction: column;
+      margin-top: 130px;
+
+    }
+    .log {
+      display: block;
+      margin: auto;
+      margin-bottom: auto;
+      margin-bottom: 50px;
+    }
+    .title {
+      padding: 20px;
+    }
+
+    svg {
+      height: 200px;
+      width: 200px;
+    }
   
     button {
       width: 100%; /* Les boutons occupent toute la largeur */

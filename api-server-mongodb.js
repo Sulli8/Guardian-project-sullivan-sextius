@@ -11,6 +11,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const authConfig = require('./auth_config.json');
 const PDFDocument = require('pdfkit');
 const app = express();
+const crypto = require('crypto');
 const path = require('path');
 const uri = "mongodb+srv://sullivansextius:T1vcZx08zLzE0pVr@cluster0.hlc6i.mongodb.net/guardian-project?retryWrites=true&w=majority";
 
@@ -52,7 +53,31 @@ const checkJwt = auth({
   audience: authConfig.authorizationParams.audience,
   issuerBaseURL: `https://${authConfig.domain}`,
 });
+app.post('/api/login', checkJwt, async function login(req, res) {
+  try {
+    const userId = req.auth.payload.sub; // ID unique de l'utilisateur issu du JWT
 
+    // Vérifier si l'utilisateur existe déjà
+    let user = await db.collection("users").findOne({ token: userId });
+
+    if (!user) {
+      // Générer des chaînes aléatoires pour les champs requis
+      const firstName = crypto.randomBytes(6).toString('hex');
+      const lastName = crypto.randomBytes(6).toString('hex');
+      const email = crypto.randomBytes(4).toString('hex')+`@gmail.com`;
+      const password = crypto.randomBytes(8).toString('hex');
+
+      const newUser = await db.collection('users').insertOne({ firstName, lastName, email, password , token: userId });
+      res.status(200).json({ message: "User created successfully", userId: newUser.insertedId });
+    } else {
+      res.status(200).json({ message: "Utilisateur déjà existant, aucun ajout nécessaire." });
+    }
+   
+  } catch (error) {
+    console.error("Erreur lors de l'insertion ou de la connexion de l'utilisateur:", error);
+    res.status(500).json({ message: "Erreur interne du serveur." });
+  }
+})
 // Connect to MongoDB
 async function connectToDatabase() {
   try {
@@ -153,9 +178,11 @@ app.post('/api/prescriptions', checkJwt, async (req, res) => {
     const currentDate = new Date();
     const prescribedDateTime = new Date(`${datePrescribed}T${timePrescribed}:00`);
     // Créer la prescription dans la collection "prescriptions"
+    const medicationIdObject = new ObjectId(medicationId);
+
     const prescription = await db.collection('prescriptions').insertOne({
       userId: user._id, // Utilisation de l'_id de l'utilisateur trouvé
-      medicationId,
+      medicamentId: medicationIdObject, // Utilisation de l'ObjectId pour medicationId
       dosage,
       frequence, // Fréquence de la prescription
       datePrescribed: prescribedDateTime, // Date actuelle de la prescription
@@ -228,17 +255,17 @@ app.post('/api/responses', checkJwt,async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-  
     // Si l'utilisateur existe, on passe à l'enregistrement des réponses
     const responses = req.body;  // Récupère les réponses envoyées par le frontend
-
     const responseDocs = responses.map((response) => ({
       userId: user._id,  // On associe la réponse à un utilisateur spécifique
       questionId: response.questionId,
       responseText: response.response.toString()
     }));
 
+    if (responseDocs.length === 0) {
+      res.status(500).json({ message: 'Aucun document à insérer. Opération annulée.' });
+    }
     // Insère toutes les réponses dans la collection 'responses'
     const result = await db.collection('responses').insertMany(responseDocs);
 
@@ -527,10 +554,20 @@ app.put('/api/subscription', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur lors de la création du WebPushToken ou de l\'envoi de la notification.' });
   }
 });
+
+
+
 app.get('/api/get-notifications', checkJwt, async (req, res) => {
   try {
+    const tokenFromJwt = req.auth.payload.sub;  // Le token d'authentification de l'utilisateur
+
+    // Vérifier si l'utilisateur existe dans la base de données
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
     // Recherche des notifications dans la base de données
-    const notifications = await db.collection("notifications").find().toArray(); // Tu peux ajouter des filtres ici si besoin
+    const notifications = await db.collection("notifications").find({ userId: user._id }).toArray();// Tu peux ajouter des filtres ici si besoin
     // Retourner les notifications trouvées en JSON
     console.log(notifications)
     res.status(200).json({message:"Notification recupérer avec succès",notifications});
@@ -539,6 +576,57 @@ app.get('/api/get-notifications', checkJwt, async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
+
+
+
+
+app.delete('/api/user/delete', checkJwt, async (req, res) => {
+  const tokenFromJwt = req.auth.payload.sub;
+  try {
+    // Trouver l'utilisateur à partir du token
+    const user = await db.collection('users').findOne({ token: tokenFromJwt });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    const userId = user._id;
+
+    // Supprimer les entrées liées dans les autres collections
+    const deleteOperations = await Promise.all([
+      db.collection('prescriptions').deleteMany({ userId }),
+      db.collection('notifications').deleteMany({ userId }),
+      db.collection('webpushtokens').deleteMany({ userId }),
+      db.collection('relances').deleteMany({ userId }),
+      db.collection('responses').deleteMany({ userId }),
+    ]);
+
+    // Supprimer l'utilisateur lui-même
+    const userDeletionResult = await db.collection('users').deleteOne({ _id: userId });
+
+    if (userDeletionResult.deletedCount === 0) {
+      return res.status(404).json({ message: "Utilisateur non trouvé ou déjà supprimé." });
+    }
+
+    // Vérifier si tout a été supprimé avec succès
+    const [prescriptions, notifications, webPushTokens, relances, responses] = deleteOperations;
+
+    res.status(200).json({
+      message: "Utilisateur et ses données associées supprimés avec succès.",
+      details: {
+        prescriptionsDeleted: prescriptions.deletedCount,
+        notificationsDeleted: notifications.deletedCount,
+        webPushTokensDeleted: webPushTokens.deletedCount,
+        relancesDeleted: relances.deletedCount,
+        responsesDeleted: responses.deletedCount,
+      }
+    });
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'utilisateur :", error);
+    res.status(500).json({ message: "Erreur serveur lors de la suppression de l'utilisateur." });
+  }
+});
+
 
 
 
@@ -715,7 +803,6 @@ app.get('/api/export-pdf/prescriptions', checkJwt, async (req, res) => {
     if (prescriptions.length === 0) {
       return res.status(404).json({ message: 'Aucune prescription trouvée pour cet utilisateur.' });
     }
-
     // Récupérer les medicaments en fonction de leurs IDs dans les prescriptions
     const medicamentIds = prescriptions.map(prescription => prescription.medicamentId);
     
@@ -737,7 +824,7 @@ app.get('/api/export-pdf/prescriptions', checkJwt, async (req, res) => {
         dosage: prescription.dosage,
         datePrescribed: prescription.datePrescribed,
         medicaments: associatedMedicaments.map(medicament => ({
-          name: medicament.name,
+          name:medicament.name,
           dosage: medicament.dosage,
           description: medicament.description,
           type: medicament.type,
@@ -779,6 +866,7 @@ app.get('/api/export-pdf/prescriptions', checkJwt, async (req, res) => {
     // Lignes du tableau
     let currentY = tableTop + rowHeight;
     result.forEach(prescription => {
+      console.log(prescription)
       // Dessiner chaque ligne du tableau avec du padding
       doc.text(prescription.medicaments[0].name, marginLeft + padding, currentY + padding);
       doc.text(prescription.dosage, marginLeft + columnWidth + padding, currentY + padding);

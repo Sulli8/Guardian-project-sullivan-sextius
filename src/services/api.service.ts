@@ -17,7 +17,12 @@ export class ApiService {
   PUBLIC_VAPID_KEY_OF_SERVER = 'BGPhLwNAwJZguAqSPCFEbfN_TkH7tTpe5AVTvrQxAfWEb8-alQBJtx9VLsL3i2T1sWWOKYRabRWq1mRMocUDt4c';
   notification_data: any;
   constructor(readonly swPush: SwPush,private router: Router,private http: HttpClient) {}
-
+  loginUser(): Observable<any>{
+    return this.http.post(`${config.apiUri}/api/login`, {});
+  }
+  deleteDataUser(){
+    return this.http.delete(`${config.apiUri}/api/user/delete`);
+  }
  
   getNotifications():Observable<any>{
     return this.http.get(`${config.apiUri}/api/get-notifications`);

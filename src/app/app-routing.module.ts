@@ -12,6 +12,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { ListDrugsComponent } from './components/list-drugs/list-drugs.component';
 import { QuestionnaireComponent } from './components/questionnaire/questionnaire.component';
+import { IntroduceComponent } from './components/introduce/introduce.component';
 
 export const routes: Routes = [
   {
@@ -72,6 +73,11 @@ export const routes: Routes = [
     path: 'questionnaire',
     component: QuestionnaireComponent,
     canActivate: [authGuardFn]
+  },
+  {
+    path: 'introduce',
+    component: IntroduceComponent,
+    canActivate: [authGuardFn],
   },
   {
     path: '',
